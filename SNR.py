@@ -384,7 +384,7 @@ for f,f_n in zip(field_point,range(len(field_point))):
 
 ax1.legend()
 ax2.legend()
-
+plt.show()
 
 # In[ ]:
 
