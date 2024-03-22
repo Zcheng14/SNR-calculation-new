@@ -12,11 +12,7 @@ import os
 
 current_path = os.getcwd()
 
-Canon_tp_path=current_path+"/data/canon_throughput.txt"
-Nikon_tp_path=current_path+"/data/nikkor_throughput.txt"
 spot_size_path=current_path+"/data/separation.txt"
-vignetting_path=current_path+"/data/vignetting.txt"
-QE_path=current_path+"/data/QE_132.txt"
 focal_plane_module_path=current_path+"/data/focal_plane_module.txt"
 dichoric_reflection_path=current_path+"/data/dichoric_reflection.txt"
 dichoric_transmission_path=current_path+"/data/dichoric_transmission.txt"
@@ -189,9 +185,9 @@ else:
 
 # canon throughput
 
-if telescope_choice == "Canon 400mm f/2.8 telephoto lens":    
+if telescope[telescope_choice]['throughput'] != None:    
     eff_telescope_tp=np.zeros(132, dtype='float')
-    with open(Canon_tp_path, "r") as file:    
+    with open(telescope[telescope_choice]['throughput'], "r") as file:    
         for line,i in zip(file,range(132)):
             line=line.split()
             eff_telescope_tp[i]=float(line[0])
@@ -204,9 +200,9 @@ else:
 
 # nikkor throughput
 
-if detector_camera_choice == "Nikkor 58mm f/0.95 S Noct":
+if detector_camera[detector_camera_choice]['throughput'] != None:
     eff_detector_camera_tp=np.zeros(132, dtype='float')
-    with open(Nikon_tp_path, "r") as file:   
+    with open(detector_camera[detector_camera_choice]['throughput'], "r") as file:   
         for line,i in zip(file,range(132)):
             line=line.split()
             eff_detector_camera_tp[i]=float(line[0])            
@@ -239,9 +235,9 @@ num_pixel=np.ceil(((spot_size/2)**2*constant.pi/(detector[detector_choice]["pixe
 
 # vignetting
 
-if detector_camera_choice == "Nikkor 58mm f/0.95 S Noct":
+if detector_camera[detector_camera_choice]['vignetting'] != None:
     eff_vignetting=np.zeros([7,132], dtype='float')
-    with open(vignetting_path, 'r') as file:   
+    with open(detector_camera[detector_camera_choice]['vignetting'], 'r') as file:   
         j=0
         for line in file:
             line=line.split()
@@ -257,9 +253,9 @@ else:
 
 
 # QE
-if detector_choice=="QHY600":
+if detector[detector_choice]['QE'] != None:
     QE=np.zeros(132, dtype='float')
-    with open(QE_path, 'r') as file:
+    with open(detector[detector_choice]['QE'], 'r') as file:
         for line,i in zip(file,range(132)):
             line=line.split()
             QE[i]=line[0]
