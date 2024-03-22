@@ -9,10 +9,10 @@ In the calculation of the noise sky background part, the code assumes that the d
 The default setting of the system uses the Canon 400mm f/2.8 telephoto lens + 50 micron core fiber + Nikkor 58mm f/0.95 S Noct lens + QHY600M CMOS detector. The default setting takes into account various factors such as lens throughput, vignetting of the Nikkor lens, detector quantum efficiency (QE), etc. The spot size is based on Zemax simulation analysis rather than theoretical values.
 
 ## Custom setting
-If a custom design is required, the current code can analyze custom telescopes, fibers, spectrograph cameras, and detectors. Other components such as gratings and dichroic beam splitters are not expected to be changed. The limitation of the custom setting is that the effectiveness will not be considered, and the spot size calculation is based on theoretical calculations.
+If a custom design is required, the current code can analyze custom telescopes, fibers, spectrograph cameras, and detectors. Other components such as gratings and dichroic beam splitters are not expected to be changed. The limitation of the custom setting is that **the effectiveness will not be considered**, and the spot size calculation is based on theoretical calculations.
 
 ### Advanced custom setting
-Basic estimation using the custom setting is sufficient. However, if you have advanced information such as the throughput of a new camera and want more accurate results, you can modify the code in the 'setting' part. For example, to add a new detector, you can add a new dictionary in the code. Taking the detector as an example. Suppose you have a detector called "New detector," then you can modify the code as follows:
+Basic estimation using the custom setting is sufficient. However, if you have advanced information such as the throughput of a new camera and want more accurate results, you can modify the code in the 'setting' part. For example, to add a new detector, you can add a new dictionary in the code. Taking the detector as an example. Suppose you have a detector called "New detector," then you can modify the code as follows and **please do not change the code in "Custom"**:
 ```
 detector={
     "QHY600":{
