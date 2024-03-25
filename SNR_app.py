@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-# data reading path
+#  data reading path
 
 current_path = os.getcwd()
 

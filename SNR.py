@@ -195,9 +195,6 @@ else:
     eff_telescope_tp=np.ones(132)
 
 
-
-
-
 # nikkor throughput
 
 if detector_camera[detector_camera_choice]['throughput'] != None:
@@ -208,10 +205,6 @@ if detector_camera[detector_camera_choice]['throughput'] != None:
             eff_detector_camera_tp[i]=float(line[0])            
 else:
     eff_detector_camera_tp=np.ones(132)
-
-
-
-
 
 # spot size
 spot_size=np.zeros([7,132], dtype='float')
@@ -229,10 +222,6 @@ else:
     
 num_pixel=np.ceil(((spot_size/2)**2*constant.pi/(detector[detector_choice]["pixel size"][0]*detector[detector_choice]["pixel size"][1])))
 
-
-
-
-
 # vignetting
 
 if detector_camera[detector_camera_choice]['vignetting'] != None:
@@ -249,9 +238,6 @@ if detector_camera[detector_camera_choice]['vignetting'] != None:
 else:
     eff_vignetting=np.ones([7,132])
 
-
-
-
 # QE
 if detector[detector_choice]['QE'] != None:
     QE=np.zeros(132, dtype='float')
@@ -261,9 +247,6 @@ if detector[detector_choice]['QE'] != None:
             QE[i]=line[0]
 else:
     QE=np.ones(132)
-
-
-
 
 # focal plane module
 
@@ -278,10 +261,6 @@ with open(focal_plane_module_path, "r") as file:
                 break
             else:
                 i = i+1
-
-
-
-
 
 # dichoric
 
@@ -312,40 +291,21 @@ with open(dichoric_transmission_path, "r") as file:
                 i = i+1          
 
 
-# # Signal
-
-
-
-
+## Signal
 eff=np.zeros([7,132], dtype='float')
 for i in range(7):
         eff[i]=eff_telescope_tp*eff_detector_camera_tp*eff_vignetting[i]*eff_collimator*eff_dichoric*eff_fiber_transmission**2*eff_focal_plane_module
 
-
-
-
-
 A=(constant.pi/4)*(telescope[telescope_choice]["diameter"]**2*0.1**2) ## cm^2
 solid_angle=(constant.pi/4)*(d_fiber/telescope[telescope_choice]["focal length"])**2*(206264.5**2) #206264.5 radian^2 to arcsec^2
-
-
-
 
 signal=np.zeros(np.shape(eff))
 for i in range(np.shape(eff)[0]):
     signal[i]=I*A*solid_angle/(h*(c/(wavelength*1e-9))/1e-7)*exposure_time*eff[i]*QE[i]
 
 
-# # Sky background
-
-
-
-
+## Sky background
 manga_count=90*10**((surface_brightness-21.5)/(-2.5))
-
-
-
-
 
 manga_exposuretime=900
 manga_disperson=1.4
@@ -353,15 +313,7 @@ sdss_mirror=((2.5/2)**2*constant.pi-(1.3/2)**2*constant.pi)*1e4
 manga_fiberarea=constant.pi
 manga_efficiency=0.32
 
-
-
-
-
 sky_brightness=(manga_count)/(manga_exposuretime*manga_disperson*sdss_mirror*manga_fiberarea*manga_efficiency) # electrons/s/Angstrom/arcsec^2/cm^2
-
-
-
-
 
 dispersion1=np.zeros([np.shape(eff)[0],51], dtype='float') # d\lambda/dl
 dispersion2=np.zeros([np.shape(eff)[0],81], dtype='float')
@@ -371,47 +323,23 @@ for i in range(np.shape(eff)[0]):
 
 dispersion=np.concatenate((dispersion1,dispersion2), axis=1)
 
-
-
-
-
 sky_brightness=sky_brightness*dispersion*(detector[detector_choice]["pixel size"][0]*1e4) # electrons/s/pixel/arcsec^2/cm^2
-
-
 
 sky_noise=sky_brightness*exposure_time*(spot_size/detector[detector_choice]["pixel size"][0])*solid_angle*A*eff # number of electrons
 
 
-
-# # Read noise
-
-
-
-
+## Read noise
 readnoise=detector[detector_choice]["readnoise"]**2*num_pixel
 
 
-# # dark noise
-
-
-
-
+## dark noise
 darknoise=detector[detector_choice]["darkcurrent"]*num_pixel*exposure_time
 
-
-# # SNR
-
-
-
-
+## SNR
 SNR=signal/np.sqrt(signal+sky_noise+readnoise+darknoise)
 
 
-# # Plot
-
-
-
-
+## Plot
 fig, [ax1, ax2] = plt.subplots(nrows=1,ncols=2,figsize=(30,15), layout="constrained")
 c=['#FF0000','#ffa500','#FFFF00','#00FF00','#00FFFF','#0000FF','#800080']
 
