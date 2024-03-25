@@ -2,4 +2,3 @@ streamlit
 scipy
 numpy
 matplotlib
-os
