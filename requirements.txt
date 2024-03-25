@@ -1,5 +1,5 @@
 streamlit
-scipy.constants
+scipy
 numpy
-matplotlib.pyplot
+matplotlib
 os
