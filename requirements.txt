@@ -1,0 +1,5 @@
+streamlit
+scipy.constants
+numpy
+matplotlib.pyplot
+os
