@@ -9,10 +9,10 @@ import os
 
 current_path = os.getcwd()
 
-spot_size_path="/home/davidbear/SNR calculation/data/separation.txt"
-focal_plane_module_path="/home/davidbear/SNR calculation/data/focal_plane_module.txt"
-dichoric_reflection_path="/home/davidbear/SNR calculation/data/dichoric_reflection.txt"
-dichoric_transmission_path="/home/davidbear/SNR calculation/data/dichoric_transmission.txt"
+spot_size_path="/mount/src/snr-calculation/data/separation.txt"
+focal_plane_module_path="/mount/src/snr-calculation/data/focal_plane_module.txt"
+dichoric_reflection_path="/mount/src/snr-calculation/data/dichoric_reflection.txt"
+dichoric_transmission_path="/mount/src/snr-calculation/data/dichoric_transmission.txt"
 
 
 ## setting
@@ -23,7 +23,7 @@ telescope={
     "Canon 400mm f/2.8 telephoto lens":{
         "diameter": 392.5/2.9, # mm
         "focal length": 392.5, # mm
-        "throughput": "/home/davidbear/SNR calculation/data/canon_throughput.txt"
+        "throughput": "/mount/src/snr-calculation/data/canon_throughput.txt"
     },
     "Custom":{
         "diameter": None,
@@ -40,8 +40,8 @@ fiber={
 detector_camera={
     "Nikkor 58mm f/0.95 S Noct":{
         "focal length": 59.67, # mm
-        "throughput": "/home/davidbear/SNR calculation/data/nikkor_throughput.txt",
-        "vignetting": "/home/davidbear/SNR calculation/data/vignetting.txt"
+        "throughput": "/mount/src/snr-calculation/data/nikkor_throughput.txt",
+        "vignetting": "/mount/src/snr-calculation/data/vignetting.txt"
     },
     "Custom":{
         "focal length": None, # mm
@@ -52,7 +52,7 @@ detector_camera={
 
 detector={
     "QHY600":{
-        "QE" : "/home/davidbear/SNR calculation/data/QE_132.txt",
+        "QE" : "/mount/src/snr-calculation/data/QE_132.txt",
         "pixel size": [3.76,3.76], # um
         "readnoise": 1.683,
         "darkcurrent": 0.0022 # T=-20 degree
