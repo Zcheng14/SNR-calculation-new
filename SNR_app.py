@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 #  data reading path
 
-spot_size_path="/mount/src/snr-calculation/data/separation.txt"
+spot_size_path="/mount/src/snr-calculation/data/separation.txt" # "/mount/src/snr-calculation/data/separation.txt"
 focal_plane_module_path="/mount/src/snr-calculation/data/focal_plane_module.txt"
 dichoric_reflection_path="/mount/src/snr-calculation/data/dichoric_reflection.txt"
 dichoric_transmission_path="/mount/src/snr-calculation/data/dichoric_transmission.txt"
@@ -49,14 +49,14 @@ detector_camera={
 detector={
     "QHY600":{
         "QE" : "/mount/src/snr-calculation/data/QHY600_QE.txt",
-        "pixel size": [3.76,3.76], # um
+        "pixel size": 3.76, # um
         "readnoise": 1.683,
         "darkcurrent": 0.0022,
         "temperature": -20
     },
     "QHY4040":{
         "QE" : "/mount/src/snr-calculation/data/QHY4040_QE.txt",
-        "pixel size": [9,9], # um
+        "pixel size": 9, # um
         "readnoise": 0.81,
         "darkcurrent": 0.16048, # T=-20 degree
         "temperature": -20
@@ -97,14 +97,22 @@ def resolution(wavelength,image_size,line_density,field_point):
     return line_density*(wavelength/1000)*detector_camera[detector_camera_choice]['focal length']/(image_size*cos_beta(line_density,wavelength,field_point)*cos_gamma(field_point))
 
 ## interface
+if "temperature_change_toggle" not in st.session_state:
+    st.session_state.temperature_change_toggle = False
+if "default_index" not in st.session_state:
+    st.session_state.default_index = 0
+if "disable_all" not in st.session_state:
+    st.session_state.disable_all = True
+if "default_setting" not in st.session_state:
+    st.session_state.default_setting = True
 def default_setting_callback():
-    if default_setting:
-        default_index = 0
-        disable_all = True
-    else:
-        default_index = None
-        disable_all = False
-    return (default_index, disable_all)
+    if st.session_state.default_setting is True:
+        st.session_state.default_index = 0
+        st.session_state.disable_all = True
+    elif st.session_state.default_setting is False:
+        st.session_state.default_index = None
+        st.session_state.disable_all = False
+    st.session_state.temperature_change_toggle = False
 
 with st.sidebar:
     analysis_mode = st.radio("Choose the analysis mode:", ["All wavelength","Single wavelength"])
@@ -130,10 +138,10 @@ with st.sidebar:
             intrinsic_broadening = st.number_input("Enter the intrinsic broadening (km/s):", format='%g',value = 0)
             surface_brightness = st.number_input('Enter sky background surface brightness (mag/arcsec$^2$):', value = 21.5, format="%0.3f")
     
-    default_setting = st.checkbox("Use default setting(Canon + 50 micron core fiber + Nikon + QHY600)?", value=True, on_change=default_setting_callback)
+    default_setting = st.checkbox("Use default setting(Canon + 50 micron core fiber + Nikon + QHY600)?", on_change=default_setting_callback, key="default_setting")
     
     with st.container(border=True):
-        telescope_choice = st.selectbox("Choose the telescope:",list(telescope.keys()), index=default_setting_callback()[0], placeholder="Select telescope...", disabled=default_setting_callback()[1])
+        telescope_choice = st.selectbox("Choose the telescope:",list(telescope.keys()), index=st.session_state.default_index, placeholder="Select telescope...", disabled=st.session_state.disable_all)
         if telescope_choice == "Custom":
             telescope_popover = False
         else:
@@ -143,7 +151,7 @@ with st.sidebar:
             telescope['Custom']['diameter'] = st.number_input("Enter the dimater (mm) of the enterance pupil of the telescope?", format="%0.4f")
 
     with st.container(border=True):
-        fiber_choice = st.selectbox("Choose the fiber:",list(fiber.keys()), index=default_setting_callback()[0], placeholder="Select fiber...", disabled=default_setting_callback()[1])
+        fiber_choice = st.selectbox("Choose the fiber:",list(fiber.keys()), index=st.session_state.default_index, placeholder="Select fiber...", disabled=st.session_state.disable_all)
         if fiber_choice == "Custom":
             fiber_popover = False
         else:
@@ -156,7 +164,7 @@ with st.sidebar:
         d_fiber = fiber[fiber_choice]
 
     with st.container(border=True):
-        detector_camera_choice = st.selectbox("Choose the spectrograph camera:",list(detector_camera.keys()), index=default_setting_callback()[0], placeholder="Select spectrograph camera...", disabled=default_setting_callback()[1])
+        detector_camera_choice = st.selectbox("Choose the spectrograph camera:",list(detector_camera.keys()), index=st.session_state.default_index, placeholder="Select spectrograph camera...", disabled=st.session_state.disable_all)
         if detector_camera_choice == "Custom":
             detector_camera_popover = False
         else:
@@ -165,22 +173,45 @@ with st.sidebar:
             detector_camera['Custom']['focal length'] = st.number_input("What is the focal length (mm) of the spectrograph camera?")
 
     with st.container(border=True):
-        detector_choice = st.selectbox("Choose the detector:",list(detector.keys()), index=default_setting_callback()[0], placeholder="Select detector...", disabled=default_setting_callback()[1])
-        if detector_choice == "Custom":
-            detector_popover = False
+        detector_col1, detector_col2 = st.columns([0.7, 0.3])
+        with detector_col1:
+            detector_choice = st.selectbox("Choose the detector:",list(detector.keys()), index=st.session_state.default_index, placeholder="Select detector...", disabled=st.session_state.disable_all)
+        with detector_col2:
+            if detector_choice is None or detector_choice == "Custom":
+                temperature_disabled = True
+            else:
+                temperature_disabled = False
+            temperature = st.toggle('$\Delta$ T', disabled= temperature_disabled, key="temperature_change_toggle")
+        if detector_choice == "Custom" or detector_choice is None:
+            if detector_choice == "Custom":
+                detector_popover = False
+            else:
+                detector_popover = True
+            with st.popover("Parameters of custom detector", disabled=detector_popover):  #
+                detector['Custom']['pixel size'] = st.number_input(
+                    "Enter the pixel size (um):")
+                detector['Custom']['readnoise'] = st.number_input("Enter the read noise (e$^-$) of the detector:",
+                                                                  format="%.3f")
+                detector['Custom']['darkcurrent'] = st.number_input(
+                    "Enter the dark current (e$^-$/pixel/s) of the detector:", format="%.4f")
+                detector['Custom']['temperature'] = st.number_input(
+                    "Enter the temperature (C$^\circ$) of the detector:")
         else:
-            detector_popover = True
-        with st.popover("Parameters of custom detector", disabled=detector_popover):
-            detector['Custom']['pixel size'][0] = st.number_input("Enter the pixel size (um) in the dispersion direction:")
-            detector['Custom']['pixel size'][1] = st.number_input("Enter the pixel size (um) in the spatial direction:")
-            detector['Custom']['readnoise'] = st.number_input("Enter the read noise (e$^-$) of the detector:", format="%.3f")
-            detector['Custom']['darkcurrent'] = st.number_input("Enter the dark current (e$^-$/pixel/s) of the detector:", format="%.4f")
-            detector['Custom']['temperature'] = st.number_input("Enter the temperature (C$^\circ$) of the detector:")
+            with st.popover(f"Temperature change of {detector_choice}", disabled=not temperature):
+                with st.container(border=True):
+                    st.write(f"The default temperature is {detector[detector_choice]['temperature']}")
+                temperature_change = st.number_input(
+                    "Enter the change of temperature (C$^\circ$):", format="%d", step=5)
 
 with st.expander("Setting overview", expanded = True):
     with st.container(border=True):
+        if analysis_mode == "Single wavelength":
+            st.markdown(f"- Wavelength: {np.squeeze(wavelength)} nm")
         st.markdown(f"- Exposure time: {exposure_time} s")
-        st.markdown(f"- Emission-line flux: {I} erg/cm$^2$/s/arcsec$^2$")
+        if analysis_mode == "All wavelength":
+            st.markdown(f"- Emission-line flux: {I} erg/cm$^2$/s/arcsec$^2$")
+        elif analysis_mode == "Single wavelength":
+            st.markdown(f"- Emission-line flux: {I} erg/cm$^2$/s/arcsec$^2$\n  - Intrinsic broadening: {intrinsic_broadening} km/s")
         st.markdown(f"- Sky background surface brightness: {surface_brightness} mag/arcsec$^2$")
     col1, col2 = st.columns(2) 
     with col1:
@@ -250,7 +281,7 @@ with st.expander("Setting overview", expanded = True):
                 if detector[detector_choice]['pixel size'] is None:
                     st.markdown(f"- Pixel size: {chr(0x274C)}")
                 else:
-                    st.markdown(f"- Pixel size: {detector[detector_choice]['pixel size'][0]} mm x {detector[detector_choice]['pixel size'][1]} mm")
+                    st.markdown(f"- Pixel size: {detector[detector_choice]['pixel size']} mm x {detector[detector_choice]['pixel size']} mm")
                 if detector[detector_choice]['readnoise'] is None:
                     st.markdown(f"- Read noise: {chr(0x274C)}")
                 else:
@@ -258,7 +289,10 @@ with st.expander("Setting overview", expanded = True):
                 if detector[detector_choice]['darkcurrent'] is None:
                     st.markdown(f"- Dark current: {chr(0x274C)}")
                 else:
-                    st.markdown(f"- Dark current: {detector[detector_choice]['darkcurrent']} e$^-$/pixel/s at {detector[detector_choice]['temperature']} C$^\circ$")
+                    if temperature is False:
+                        st.markdown(f"- Dark current: {detector[detector_choice]['darkcurrent']} e$^-$/pixel/s at {detector[detector_choice]['temperature']} C$^\circ$")
+                    elif temperature is True:
+                        st.markdown(f"- Dark current: {detector[detector_choice]['darkcurrent']} e$^-$/pixel/s at {detector[detector_choice]['temperature']} C$^\circ$\n  - Temperature change: {temperature_change}C$^\circ$")
                 if detector[detector_choice]['QE'] is None:
                     st.markdown(f"- QE: {chr(0x274C)}")
                 else:
@@ -268,8 +302,7 @@ def focal_plane_module_file_reading(path):
     data = np.loadtxt(path)
     eff_focal_plane_module = np.interp(wavelength, data[:,0], data[:,1])
     return eff_focal_plane_module
-    
-            
+
 def QE_file_reading(detector_choice):
     if detector[detector_choice]['QE'] is not None:
         data = np.loadtxt(detector[detector_choice]['QE'], delimiter=" ")
@@ -277,7 +310,7 @@ def QE_file_reading(detector_choice):
     else:
         QE = np.ones_like(wavelength)
     return QE
-     
+
 def telescope_throughput_file_reading(telescope_choice):
     if telescope[telescope_choice]['throughput'] is not None:    
         data = np.loadtxt(telescope[telescope_choice]['throughput'])
@@ -353,9 +386,9 @@ def main():
     spot_size = spot_size_file_reading(default_setting)
     
     if analysis_mode == "All wavelength":
-        num_pixel = (spot_size/2)**2*constant.pi/(detector[detector_choice]["pixel size"][0]*detector[detector_choice]["pixel size"][1])
+        num_pixel = (spot_size/2)**2*constant.pi/(detector[detector_choice]["pixel size"]**2)
     elif analysis_mode == "Single wavelength":
-        num_pixel = np.sqrt(spot_size**2+intrinsic_broadening**2)*spot_size/4*constant.pi/(detector[detector_choice]["pixel size"][0]*detector[detector_choice]["pixel size"][1])
+        num_pixel = np.sqrt(spot_size**2+intrinsic_broadening**2)*spot_size/4*constant.pi/(detector[detector_choice]["pixel size"]**2)
 
     # vignetting
     eff_vignetting = vignetting_file_reading(detector_camera_choice, spot_size)
@@ -415,11 +448,11 @@ def main():
         for i in range(len(field_point)):
             dispersion[i] = cos_gamma(field_point)[i]*cos_beta(line_density,wavelength,field_point[i])/(detector_camera[detector_camera_choice]["focal length"]*line_density)
 
-    sky_brightness = sky_brightness*dispersion*(detector[detector_choice]["pixel size"][0]*1e4) # electrons/s/pixel/arcsec^2/cm^2
+    sky_brightness = sky_brightness*dispersion*(detector[detector_choice]["pixel size"]*1e4) # electrons/s/pixel/arcsec^2/cm^2
 
     sky_noise_per_pixel = sky_brightness*exposure_time*solid_angle*A*eff # number of electrons
     
-    sky_noise = sky_noise_per_pixel*(spot_size/detector[detector_choice]["pixel size"][0])
+    sky_noise = sky_noise_per_pixel*(spot_size/detector[detector_choice]["pixel size"])
 
 
     ## Read noise
@@ -427,7 +460,10 @@ def main():
     readnoise = readnoise_per_pixel*num_pixel
     
     ## dark noise
-    darknoise_per_pixel = detector[detector_choice]["darkcurrent"]*exposure_time
+    if temperature is True:
+        darknoise_per_pixel = detector[detector_choice]["darkcurrent"] * (2 ** (temperature_change / 10)) * exposure_time
+    else:
+        darknoise_per_pixel = detector[detector_choice]["darkcurrent"]*exposure_time
     darknoise = darknoise_per_pixel*num_pixel
 
     ## SNR
@@ -515,8 +551,8 @@ def main():
         ax1.legend(title='Fiber slit\'s height', fontsize=25, title_fontsize=25)
         ax2.legend(title='Fiber slit\'s height', fontsize=25, title_fontsize=25)
 
-        ax1.set_title('SNR of red channel', fontsize=36)
-        ax2.set_title('SNR of blue channel', fontsize=36)
+        ax1.set_title('SNR of blue channel', fontsize=36)
+        ax2.set_title('SNR of red channel', fontsize=36)
 
         ## Resolution
         fig_r, [ax1_r, ax2_r] = plt.subplots(nrows=1, ncols=2, figsize=(30, 15), layout="constrained")
@@ -594,8 +630,8 @@ def main():
         ax1_r.legend(title='Fiber slit\'s height', fontsize=25, title_fontsize=25)
         ax2_r.legend(title='Fiber slit\'s height', fontsize=25, title_fontsize=25)
 
-        ax1_r.set_title('Resolution of red channel', fontsize=36)
-        ax2_r.set_title('Resolution of blue channel', fontsize=36)
+        ax1_r.set_title('Resolution of blue channel', fontsize=36)
+        ax2_r.set_title('Resolution of red channel', fontsize=36)
 
         ## Show calculation
         with st.expander("Result", expanded=True):
@@ -604,20 +640,27 @@ def main():
             st.pyplot(fig_r)
             with red_result:
                 st.write('Red channel')
-                st.markdown(f"- Average photon counts from target: {round(np.mean(photon_counts[:,:cut[-1] + 1]))}")
+                st.markdown(f"- Average photon counts from target: {round(np.mean(signal[:,:cut[-1] + 1]))} e$^-$")
                 st.markdown(f"- Average PSF area: {round(np.mean(num_pixel[:,:cut[-1] + 1]))} pixel")
                 st.markdown(f"- Average sky counts: {round(np.mean(sky_noise_per_pixel[:,:cut[-1] + 1]))} e$^-$/1D pixel")
-                st.markdown(f"- Dark counts: {round(darknoise_per_pixel)} e$^-$/pixel at {detector[detector_choice]['temperature']} C$^\circ$")
+                if st.session_state.temperature_change_toggle is True:
+                    st.markdown(f"- Dark counts: {round(darknoise_per_pixel)} e$^-$/pixel at {detector[detector_choice]['temperature']} C$^\circ$")
+                else:
+                    st.markdown(f"- Dark counts: {round(darknoise_per_pixel)} e$^-$/pixel at {detector[detector_choice]['temperature']} C$^\circ$")
                 st.markdown(f"- Read noise: {round(readnoise_per_pixel)} e$^-$/pixel")
             with blue_result:
                 st.write('Blue channel')
-                st.markdown(f"- Average photon counts from target: {round(np.mean(photon_counts[:,cut[-1] + 1:]))}")
+                st.markdown(f"- Average photon counts from target: {round(np.mean(signal[:,cut[-1] + 1:]))} e$^-$")
                 st.markdown(f"- Average PSF area: {round(np.mean(num_pixel[:,cut[-1] + 1:]))} pixel")
                 st.markdown(f"- Average sky counts: {round(np.mean(sky_noise_per_pixel[:,cut[-1] + 1:]))} e$^-$/1D pixel")
-                st.markdown(f"- Dark counts: {round(darknoise_per_pixel)} e$^-$/pixel at {detector[detector_choice]['temperature']} C$^\circ$")
+                if st.session_state.temperature_change_toggle is True:
+                    st.markdown(f"- Dark counts: {round(darknoise_per_pixel)} e$^-$/pixel at {detector[detector_choice]['temperature']+temperature_change} C$^\circ$")
+                else:
+                    st.markdown(
+                        f"- Dark counts: {round(darknoise_per_pixel)} e$^-$/pixel at {detector[detector_choice]['temperature']} C$^\circ$")
                 st.markdown(f"- Read noise: {round(readnoise_per_pixel)} e$^-$/pixel")
     elif analysis_mode == "Single wavelength":
-        with st.container(border=True):
+        with st.expander("Result", expanded=True):
             resolution_single = np.zeros_like(spot_size)
             if wavelength <= 510:
                 for f,i in zip(field_point , range(len(field_point))):
@@ -633,21 +676,25 @@ def main():
                 return data
             
             SNR = round_up_to_string(SNR, 2)
-            st.write(f"The SNR of {np.squeeze(wavelength)}: [{SNR}]")
+            st.write(f"The SNR of {np.squeeze(wavelength)} nm: [{SNR}]")
 
             resolution_single = round_up_to_string(resolution_single, 0)
-            st.write(f"The resolution of {np.squeeze(wavelength)}: [{resolution_single}]")
+            st.write(f"The resolution of {np.squeeze(wavelength)} nm: [{resolution_single}]")
             
-            photon_counts = round_up_to_string(photon_counts, 0)
-            st.markdown(f"- Photon counts from target: [{photon_counts}]")
+            signal = round_up_to_string(signal, 0)
+            st.markdown(f"- Photon counts from target: [{signal}] e$^-$")
             
             num_pixel = round_up_to_string(num_pixel, 0)
             st.markdown(f"- PSF area: [{num_pixel}] pixel")
             
             sky_noise_per_pixel = round_up_to_string(sky_noise_per_pixel, 0)
             st.markdown(f"- sky counts: [{sky_noise_per_pixel}] e$^-$/1D pixel")
-            
-            st.markdown(f"- Dark counts: {round(darknoise_per_pixel)} e$^-$/pixel at {detector[detector_choice]['temperature']} C$^\circ$")
+
+            if st.session_state.temperature_change_toggle is True:
+                st.markdown(f"- Dark counts: {round(darknoise_per_pixel)} e$^-$/pixel at {detector[detector_choice]['temperature']+temperature_change} C$^\circ$")
+            else:
+                st.markdown(
+                    f"- Dark counts: {round(darknoise_per_pixel)} e$^-$/pixel at {detector[detector_choice]['temperature']} C$^\circ$")
             st.markdown(f"- Read noise: {round(readnoise_per_pixel)} e$^-$/pixel")
 
 not_ready=None    
