@@ -4,6 +4,7 @@ import scipy.constants as constant
 import numpy as np
 import matplotlib.pyplot as plt
 
+st.set_page_config(layout="wide")
 #  data reading path
 
 spot_size_path="/mount/src/snr-calculation/data/separation.txt" # "/mount/src/snr-calculation/data/separation.txt"
