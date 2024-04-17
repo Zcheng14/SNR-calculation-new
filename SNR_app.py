@@ -3,9 +3,13 @@ import math
 import scipy.constants as constant
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 st.set_page_config(layout="wide")
+
 #  data reading path
+
+current_path = os.getcwd()
 
 spot_size_path="/mount/src/snr-calculation/data/separation.txt" # "/mount/src/snr-calculation/data/separation.txt"
 focal_plane_module_path="/mount/src/snr-calculation/data/focal_plane_module.txt"
@@ -389,7 +393,8 @@ def main():
     if analysis_mode == "All wavelength":
         num_pixel = (spot_size/2)**2*constant.pi/(detector[detector_choice]["pixel size"]**2)
     elif analysis_mode == "Single wavelength":
-        num_pixel = np.sqrt(spot_size**2+intrinsic_broadening**2)*spot_size/4*constant.pi/(detector[detector_choice]["pixel size"]**2)
+        wavelength_width = intrinsic_broadening/speed_of_light*(wavelength/1000)
+        num_pixel = np.sqrt(spot_size**2+wavelength_width**2)*spot_size/4*constant.pi/(detector[detector_choice]["pixel size"]**2)
 
     # vignetting
     eff_vignetting = vignetting_file_reading(detector_camera_choice, spot_size)
@@ -675,12 +680,15 @@ def main():
                 data = np.around(data, decimals=num_decimal)
                 data = ", ".join(str(x) for x in data)
                 return data
-            
+
+            field_point_str =  ", ".join(str(x) for x in field_point)
+            st.header(f'The results are reported for slit heights of [{field_point_str}] mm, respectively.', divider='rainbow')
+
             SNR = round_up_to_string(SNR, 2)
-            st.write(f"The SNR of {np.squeeze(wavelength)} nm: [{SNR}]")
+            st.markdown(f"- The SNR of an emission line at {np.squeeze(wavelength)} nm: [{SNR}]")
 
             resolution_single = round_up_to_string(resolution_single, 0)
-            st.write(f"The resolution of {np.squeeze(wavelength)} nm: [{resolution_single}]")
+            st.markdown(f"- The resolution (R) at {np.squeeze(wavelength)} nm: [{resolution_single}]")
             
             signal = round_up_to_string(signal, 0)
             st.markdown(f"- Photon counts from target: [{signal}] e$^-$")
