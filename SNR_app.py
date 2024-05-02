@@ -3,18 +3,17 @@ import math
 import scipy.constants as constant
 import numpy as np
 import matplotlib.pyplot as plt
-import os
 
 st.set_page_config(layout="wide")
 
 #  data reading path
 
-current_path = os.getcwd()
+current_path = "/mount/src/snr-calculation/" #/mount/src/snr-calculation/ #/home/davidbear/SNR calculation/
 
-spot_size_path="/mount/src/snr-calculation/data/separation.txt" # "/mount/src/snr-calculation/data/separation.txt"
-focal_plane_module_path="/mount/src/snr-calculation/data/focal_plane_module.txt"
-dichoric_reflection_path="/mount/src/snr-calculation/data/dichoric_reflection.txt"
-dichoric_transmission_path="/mount/src/snr-calculation/data/dichoric_transmission.txt"
+spot_size_path=f"{current_path}data/separation.txt"
+focal_plane_module_path=f"{current_path}data/focal_plane_module.txt"
+dichoric_reflection_path=f"{current_path}data/dichoric_reflection.txt"
+dichoric_transmission_path=f"{current_path}data/dichoric_transmission.txt"
 
 
 ## setting
@@ -24,7 +23,7 @@ telescope={
     "Canon 400mm f/2.8 telephoto lens":{
         "diameter": 392.5/2.9, # mm
         "focal length": 392.5, # mm
-        "throughput": "/mount/src/snr-calculation/data/canon_throughput.txt"
+        "throughput": f"{current_path}data/canon_throughput.txt"
     },
     "Custom":{
         "diameter": None,
@@ -41,8 +40,8 @@ fiber={
 detector_camera={
     "Nikkor 58mm f/0.95 S Noct":{
         "focal length": 59.67, # mm
-        "throughput": "/mount/src/snr-calculation/data/nikkor_throughput.txt",
-        "vignetting": "/mount/src/snr-calculation/data/vignetting.txt"
+        "throughput": f"{current_path}data/nikkor_throughput.txt",
+        "vignetting": f"{current_path}data/vignetting.txt"
     },
     "Custom":{
         "focal length": None, # mm
@@ -53,14 +52,14 @@ detector_camera={
 
 detector={
     "QHY600":{
-        "QE" : "/mount/src/snr-calculation/data/QHY600_QE.txt",
+        "QE" : f"{current_path}data/QHY600_QE.txt",
         "pixel size": 3.76, # um
         "readnoise": 1.683,
         "darkcurrent": 0.0022,
         "temperature": -20
     },
     "QHY4040":{
-        "QE" : "/mount/src/snr-calculation/data/QHY4040_QE.txt",
+        "QE" : f"{current_path}data/QHY4040_QE.txt",
         "pixel size": 9, # um
         "readnoise": 0.81,
         "darkcurrent": 0.16048, # T=-20 degree
@@ -497,7 +496,7 @@ def main():
         special_label1 = "H$\\beta$"
         special_x2 = 501
         ax1.axvline(x=special_x2, color='black', linestyle='--')
-        special_label2 = "O[III]"
+        special_label2 = "[O-III]"
 
         xticks = list(xticks)
         xticks=[int(i) for i in xticks]
@@ -524,7 +523,7 @@ def main():
         special_label1 = "H$\\alpha$"
         special_x2 = 672
         ax2.axvline(x=special_x2, color='black', linestyle='--')
-        special_label2 = "S[II]"
+        special_label2 = "[S-II]"
 
         xticks = list(xticks)
         xticks=[int(i) for i in xticks]
@@ -576,7 +575,7 @@ def main():
         special_label1 = "H$\\beta$"
         special_x2 = 501
         ax1_r.axvline(x=special_x2, color='black', linestyle='--')
-        special_label2 = "O[III]"
+        special_label2 = "[O-III]"
 
         xticks = list(xticks)
         xticks = [int(i) for i in xticks]
@@ -603,7 +602,7 @@ def main():
         special_label1 = "H$\\alpha$"
         special_x2 = 672
         ax2_r.axvline(x=special_x2, color='black', linestyle='--')
-        special_label2 = "S[II]"
+        special_label2 = "[S-II]"
 
         xticks = list(xticks)
         xticks = [int(i) for i in xticks]
