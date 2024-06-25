@@ -5,6 +5,7 @@ from analyses import Analysis
 from input_panels import initialize, Panel
 from overviews import Overview
 
+st.set_page_config(layout="wide")
 
 def show_result():
     analysis = Analysis(analysis_mode, default_setting, telescope_choice, d_fiber, detector_camera_choice,
