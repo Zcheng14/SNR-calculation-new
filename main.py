@@ -2,7 +2,7 @@ import streamlit as st
 
 from results import Graph, print_result_info_multi_wavelength, print_result_info_single_wavelength
 from analyses import Analysis
-from input_panels import Panel
+from input_panels import initialize, Panel
 from overviews import Overview
 
 
@@ -83,6 +83,8 @@ def show_result():
 
 
 if __name__ == "__main__":
+    initialize()
+
     with st.sidebar:
         input = Panel()
 

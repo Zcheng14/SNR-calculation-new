@@ -3,16 +3,18 @@ import numpy as np
 
 import settings
 
-if "temperature_change_toggle" not in st.session_state:
-    st.session_state.temperature_change_toggle = False
-if "default_index" not in st.session_state:
-    st.session_state.default_index = 0
-if "disable_all" not in st.session_state:
-    st.session_state.disable_all = True
-if "default_setting" not in st.session_state:
-    st.session_state.default_setting = True
+def initialize():
+    if "temperature_change_toggle" not in st.session_state:
+        st.session_state.temperature_change_toggle = False
+    if "default_index" not in st.session_state:
+        st.session_state.default_index = 0
+    if "disable_all" not in st.session_state:
+        st.session_state.disable_all = True
+    if "default_setting" not in st.session_state:
+        st.session_state.default_setting = True
 
 def default_setting_callback():
+
     if st.session_state.default_setting is True:
         st.session_state.default_index = 0
         st.session_state.disable_all = True
