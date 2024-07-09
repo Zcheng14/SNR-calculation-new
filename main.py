@@ -101,7 +101,6 @@ if __name__ == "__main__":
             intrinsic_broadening = None
 
         default_setting = input.default_setting
-        st.write(default_setting)
         default_system = input.default_system
 
         telescope_choice = input.telescope_choice
