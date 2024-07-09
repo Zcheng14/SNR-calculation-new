@@ -8,7 +8,7 @@ from overviews import Overview
 st.set_page_config(layout="wide")
 
 def show_result():
-    analysis = Analysis(analysis_mode, default_setting, telescope_choice, d_fiber, detector_camera_choice,
+    analysis = Analysis(analysis_mode, default_setting, default_system, telescope_choice, d_fiber, detector_camera_choice,
                         detector_choice, wavelengths, intrinsic_broadening)
 
     signal = analysis.cal_signal(I, exposure_time)
@@ -101,6 +101,8 @@ if __name__ == "__main__":
             intrinsic_broadening = None
 
         default_setting = input.default_setting
+        st.write(default_setting)
+        default_system = input.default_system
 
         telescope_choice = input.telescope_choice
         fiber_choice = input.fiber_choice
@@ -115,7 +117,8 @@ if __name__ == "__main__":
             temperature_change = None
 
     with st.expander("Setting overview", expanded=True):
-        setting_overview = Overview(analysis_mode,
+        setting_overview = Overview(default_setting,
+                                    analysis_mode,
                                     wavelengths,
                                     exposure_time,
                                     I,

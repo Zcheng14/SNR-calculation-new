@@ -5,7 +5,8 @@ import settings
 
 
 class Overview:
-    def __init__(self, analysis_mode, wavelengths, exposure_time, I, intrinsic_broadening, surface_brightness,
+    def __init__(self, default_setting, analysis_mode, wavelengths, exposure_time, I, intrinsic_broadening,
+                 surface_brightness,
                  telescope_choice, fiber_choice, detector_camera_choice, detector_choice, is_temperature_change,
                  temperature_change):
 
@@ -16,6 +17,7 @@ class Overview:
         with col1:
             self.__telescope_overview(telescope_choice)
             self.__fiber_overview(fiber_choice)
+            self.__spot_size_overview(default_setting)
 
         with col2:
             self.__detector_camera_overview(detector_camera_choice)
@@ -127,3 +129,14 @@ class Overview:
                     st.markdown(f"- QE: {chr(0x274C)}")
                 else:
                     st.markdown(f"- QE: {chr(0x2705)}")
+
+    @staticmethod
+    def __spot_size_overview(default_setting):
+        with st.container(border=True):
+            st.markdown('Spot size')
+            if default_setting is True:
+                st.markdown(f"- Theoretical calculation: {chr(0x274C)}")
+                st.markdown(f"- Simulation: {chr(0x2705)}")
+            else:
+                st.markdown(f"- Theoretical calculation: {chr(0x2705)}")
+                st.markdown(f"- Simulation: {chr(0x274C)}")

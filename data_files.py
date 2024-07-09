@@ -28,9 +28,9 @@ class TwoDataTextFiles():
 
 
 class SpotSizeAndVignettingFiles(DataTextFile):
-    def interpolate(self, wavelengths):
+    def interpolate(self, wavelengths, default_system):
         data = np.zeros((len(settings.field_points), len(wavelengths)))
-        data_x = np.concatenate((settings.default_blue_wavelengths, settings.default_red_wavelengths), axis=None)
+        data_x = settings.default_system[default_system]["wavelength_range"]
         for i in range(len(settings.field_points)):
             data[i] = np.interp(wavelengths, data_x, self.data[i])
         return data

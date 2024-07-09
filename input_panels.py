@@ -6,17 +6,36 @@ import settings
 def initialize():
     if "temperature_change_toggle" not in st.session_state:
         st.session_state.temperature_change_toggle = False
-    if "default_index" not in st.session_state:
-        st.session_state.default_index = 0
+
+    if "default_index_telescope" not in st.session_state:
+        st.session_state.default_index_telescope = 0
+    if "default_index_fiber" not in st.session_state:
+        st.session_state.default_index_fiber = 0
+    if "default_index_detector_camera" not in st.session_state:
+        st.session_state.default_index_detector_camera = 0
+    if "default_index_detector" not in st.session_state:
+        st.session_state.default_index_detector = 0
+
     if "disable_all" not in st.session_state:
         st.session_state.disable_all = True
     if "default_setting" not in st.session_state:
         st.session_state.default_setting = True
+    if "default_system" not in st.session_state:
+        st.session_state.default_system = "Nikkor lens"
 
 def default_setting_callback():
 
     if st.session_state.default_setting is True:
-        st.session_state.default_index = 0
+        if st.session_state.default_system == "Nikkor lens":
+            st.session_state.default_index_telescope = 0
+            st.session_state.default_index_fiber = 0
+            st.session_state.default_index_detector_camera = 0
+            st.session_state.default_index_detector = 0
+        elif st.session_state.default_system == "f/1.5 custom design lens":
+            st.session_state.default_index_telescope = 0
+            st.session_state.default_index_fiber = 0
+            st.session_state.default_index_detector_camera = 1
+            st.session_state.default_index_detector = 1
         st.session_state.disable_all = True
     elif st.session_state.default_setting is False:
         st.session_state.default_index = None
@@ -28,28 +47,56 @@ class Panel:
     def __init__(self):
         self.analysis_mode = st.radio("Choose the analysis mode:", ["All wavelength", "Single wavelength"])
 
-        self.__basic_panel()
+        self.__default_panel()
 
-        self.default_setting = st.checkbox("Use default setting(Canon + 50 micron core fiber + Nikon + QHY600)?",
-                                           on_change=default_setting_callback, key="default_setting")
+        self.__basic_panel()
 
         self.__telescope_panel()
         self.__fiber_panel()
         self.__detector_camera_panel()
         self.__detector_panel()
 
+    def __default_panel(self):
+        with st.container(border=True):
+            self.default_setting = st.checkbox("Choose default setting:",
+                                          on_change=default_setting_callback, key="default_setting")
+            if self.default_setting is True:
+                self.default_system = st.selectbox("Choose the default system:", list(settings.default_system.keys()),
+                                                     index=0,
+                                                     placeholder="Select default system...",
+                                                     disabled=False, key="default_system",on_change=default_setting_callback)
+            else:
+                self.default_system = st.selectbox("Choose the default system:", list(settings.default_system.keys()),
+                                                   index=None,
+                                                   placeholder="Select default system...",
+                                                   disabled=True, key="default_system", on_change=default_setting_callback)
+
     def __basic_panel(self):
         if self.analysis_mode == "All wavelength":
             with st.container(border=True):
                 wavelength_col1, wavelength_col2 = st.columns(2)
                 with wavelength_col1:
-                    wavelength_red = st.slider('Select a range of wavelength (nm)', 460, 510, value=(460, 510),
+                    if st.session_state.default_setting is True:
+                        start_wavelength = settings.default_system[st.session_state.default_system]["wavelength_panel"][0]
+                        end_wavelength = settings.default_system[st.session_state.default_system]["wavelength_panel"][1]
+                        wavelength_blue = st.slider('Select a range of wavelength (nm)',start_wavelength, end_wavelength, value=(start_wavelength, end_wavelength),
                                                disabled=False)
+                    else:
+                        wavelength_blue = st.slider('Select a range of wavelength (nm)', 460, 510, value=(460, 510),
+                                                    disabled=False)
                 with wavelength_col2:
-                    wavelength_blue = st.slider('Select a range of wavelength (nm)', 610, 690, value=(610, 690),
+                    if st.session_state.default_setting is True:
+                        start_wavelength = settings.default_system[st.session_state.default_system]["wavelength_panel"][2]
+                        end_wavelength = settings.default_system[st.session_state.default_system]["wavelength_panel"][3]
+                        wavelength_red = st.slider('Select a range of wavelength (nm)', start_wavelength,
+                                                   end_wavelength, value=(start_wavelength, end_wavelength),
+                                                   disabled=False)
+                    else:
+                        wavelength_red = st.slider('Select a range of wavelength (nm)', 610, 690, value=(610, 690),
                                                 disabled=False)
-                self.wavelengths = np.concatenate((np.arange(wavelength_red[0], wavelength_red[1] + 1),
-                                                   np.arange(wavelength_blue[0], wavelength_blue[1] + 1)), axis=None)
+
+                self.wavelengths = np.concatenate((np.arange(wavelength_blue[0], wavelength_blue[1] + 1),
+                                                   np.arange(wavelength_red[0], wavelength_red[1] + 1)), axis=None)
                 self.exposure_time = st.number_input("Enter exposure time (s)", value=900)
                 self.I = st.number_input('Enter emission-line flux (erg/cm$^2$/s/arcsec$^2$):', format='%g',
                                          value=1e-17)
@@ -71,7 +118,7 @@ class Panel:
     def __telescope_panel(self):
         with st.container(border=True):
             self.telescope_choice = st.selectbox("Choose the telescope:", list(settings.telescope.keys()),
-                                                 index=st.session_state.default_index,
+                                                 index=st.session_state.default_index_telescope,
                                                  placeholder="Select telescope...",
                                                  disabled=st.session_state.disable_all)
             if self.telescope_choice == "Custom":
@@ -87,7 +134,7 @@ class Panel:
     def __fiber_panel(self):
         with st.container(border=True):
             self.fiber_choice = st.selectbox("Choose the fiber:", list(settings.fiber.keys()),
-                                        index=st.session_state.default_index, placeholder="Select fiber...",
+                                        index=st.session_state.default_index_fiber, placeholder="Select fiber...",
                                         disabled=st.session_state.disable_all)
             if self.fiber_choice == "Custom":
                 fiber_popover = False
@@ -105,7 +152,7 @@ class Panel:
         with st.container(border=True):
             self.detector_camera_choice = st.selectbox("Choose the spectrograph camera:",
                                                   list(settings.detector_camera.keys()),
-                                                  index=st.session_state.default_index,
+                                                  index=st.session_state.default_index_detector_camera,
                                                   placeholder="Select spectrograph camera...",
                                                   disabled=st.session_state.disable_all)
             if self.detector_camera_choice == "Custom":
@@ -121,7 +168,7 @@ class Panel:
             detector_col1, detector_col2 = st.columns([0.7, 0.3])
             with detector_col1:
                 self.detector_choice = st.selectbox("Choose the detector:", list(settings.detector.keys()),
-                                               index=st.session_state.default_index, placeholder="Select detector...",
+                                               index=st.session_state.default_index_detector, placeholder="Select detector...",
                                                disabled=st.session_state.disable_all)
             with detector_col2:
                 if self.detector_choice is None or self.detector_choice == "Custom":
