@@ -44,9 +44,9 @@ class ThroughputContributors:
         return data_files.load_AR_coating(wavelengths)
 
     @staticmethod
-    def load_eff_vignetting(path, wavelengths, default_system):
+    def load_eff_vignetting(path, wavelengths, detector_camera_choice):
         if path is not None:
-            return data_files.SpotSizeAndVignettingFiles(path).interpolate(wavelengths, default_system) * 0.01
+            return data_files.VignettingFiles(path).interpolate(wavelengths, detector_camera_choice) * 0.01
         else:
             return np.ones([len(settings.field_points), len(wavelengths)])
 
@@ -92,7 +92,7 @@ class Formula:
 def find_spot_size(analysis_mode, default_setting, default_system, detector_camera_choice, d_fiber, wavelengths):
     if default_setting:
         path = settings.default_system[default_system]["spot_path"]
-        return data_files.SpotSizeAndVignettingFiles(path).interpolate(wavelengths, default_system)
+        return data_files.SpotSizeFiles(path).interpolate(wavelengths, default_system)
     else:
         spot_size = np.zeros((len(settings.field_points), len(wavelengths)))
         for i in range(len(settings.field_points)):
@@ -160,8 +160,8 @@ class Analysis:
 
         self.eff_AR_coating_grating = ThroughputContributors.load_eff_AR_coating_grating(wavelengths)
 
-        path = settings.detector_camera[detector_camera_choice]['vignetting']
-        self.eff_vignetting = ThroughputContributors.load_eff_vignetting(path, wavelengths, default_system)
+        path = settings.detector_camera[detector_camera_choice]['vignetting']['path']
+        self.eff_vignetting = ThroughputContributors.load_eff_vignetting(path, wavelengths, detector_camera_choice)
 
         path = settings.detector_camera[detector_camera_choice]['throughput']
         self.eff_detector_camera_tp = ThroughputContributors.load_eff_detector_camera_tp(path, wavelengths)

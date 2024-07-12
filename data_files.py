@@ -27,10 +27,19 @@ class TwoDataTextFiles():
         return np.interp(x, data_x, self.combined_data)
 
 
-class SpotSizeAndVignettingFiles(DataTextFile):
+class SpotSizeFiles(DataTextFile):
     def interpolate(self, wavelengths, default_system):
         data = np.zeros((len(settings.field_points), len(wavelengths)))
         data_x = settings.default_system[default_system]["wavelength_range"]
+        for i in range(len(settings.field_points)):
+            data[i] = np.interp(wavelengths, data_x, self.data[i])
+        return data
+
+
+class VignettingFiles(DataTextFile):
+    def interpolate(self, wavelengths, detector_camera_choice):
+        data = np.zeros((len(settings.field_points), len(wavelengths)))
+        data_x = settings.detector_camera[detector_camera_choice]['vignetting']['wavelength_range']
         for i in range(len(settings.field_points)):
             data[i] = np.interp(wavelengths, data_x, self.data[i])
         return data
@@ -44,7 +53,6 @@ def load_AR_coating(x):
         data = np.interp(blue_range, data[:, 0], data[:, 1])
         blue_all_data.append(data)
     blue_mean_data = np.mean(blue_all_data, axis=0)
-
 
     red_all_data = []
     for path in settings.red_AR_coating_paths:

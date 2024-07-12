@@ -55,17 +55,26 @@ detector_camera = {
     "Nikkor 58mm f/0.95 S Noct": {
         "focal length": 59.67,  # mm
         "throughput": current_path + "/data/throughput/nikkor_throughput.txt",
-        "vignetting": current_path + "/data/vignetting/vignetting_Nikkor.txt"
+        "vignetting": {
+            "path": current_path + "/data/vignetting/vignetting_Nikkor.txt",
+            "wavelength_range": np.concatenate((default_blue_wavelengths, default_red_wavelengths), axis=None)
+            }
     },
     "f/1.5 custom design lens":{
         "focal length": 105,  # mm
         "throughput": None,
-        "vignetting": current_path + "/data/vignetting/vignetting_custom.txt"
+        "vignetting": {
+            "path": current_path + "/data/vignetting/vignetting_custom.txt",
+            "wavelength_range": np.concatenate((np.arange(465, 506), np.arange(625, 681)), axis=None)
+            }
     },
     "Custom": {
         "focal length": None,  # mm
         "throughput": None,
-        "vignetting": None
+        "vignetting": {
+            "path": None,
+            "wavelength_range": None
+            }
     }
 }
 

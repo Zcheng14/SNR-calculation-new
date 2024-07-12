@@ -4,6 +4,7 @@ from results import Graph, print_result_info_multi_wavelength, print_result_info
 from analyses import Analysis
 from input_panels import initialize, Panel
 from overviews import Overview
+import numpy as np
 
 st.set_page_config(layout="wide")
 
@@ -18,7 +19,12 @@ def show_result():
     SNR = analysis.cal_SNR(signal, sky_background, read_noise, dark_noise)
     resolution = analysis.cal_resolution()
 
+    spot_size = analysis.spot_size
+    kk = spot_size[:, [20, 41, -35, -19]]
+    np.savetxt("bb.txt", kk)
+
     num_pixel = analysis.num_pixel
+
     sky_noise_per_pixel = analysis.sky_noise_per_pixel
     darknoise_per_pixel = analysis.darknoise_per_pixel
     readnoise_per_pixel = analysis.readnoise_per_pixel
@@ -101,7 +107,10 @@ if __name__ == "__main__":
             intrinsic_broadening = None
 
         default_setting = input.default_setting
-        default_system = input.default_system
+        if default_setting is True:
+            default_system = input.default_system
+        else:
+            default_system = None
 
         telescope_choice = input.telescope_choice
         fiber_choice = input.fiber_choice
