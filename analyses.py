@@ -134,7 +134,7 @@ def cal_num_pixel(analysis_mode, spot_size, detector_choice, wavelength, intrins
 
 
 class Analysis:
-    def __init__(self, analysis_mode, default_setting, default_system, telescope_choice, d_fiber, detector_camera_choice,
+    def __init__(self, analysis_mode, continuum_mode, default_setting, default_system, telescope_choice, d_fiber, detector_camera_choice,
                 detector_choice,
                 wavelengths, intrinsic_broadening=None):
         self.analysis_mode = analysis_mode
@@ -143,6 +143,7 @@ class Analysis:
         self.detector_camera_choice = detector_camera_choice
         self.detector_choice = detector_choice
         self.wavelengths = wavelengths
+        self.continuum_mode = continuum_mode
 
         # eff
         self.eff_focal_plane_module = ThroughputContributors.load_eff_focal_plane_module(wavelengths)
@@ -233,6 +234,42 @@ class Analysis:
             dispersion[i] = cos_gamma[i] * cos_beta / (detectr_focal * line_density)
         return dispersion
 
+    def cal_continuum(self, I_continuum, exposure_time):
+        self.eff = np.zeros_like(self.eff_vignetting)
+        for i in range(len(settings.field_points)):
+            self.eff[i] = (self.eff_focal_plane_module *
+                           self.eff_telescope_tp *
+                           self.eff_fiber_transmission ** 2 *
+                           self.eff_collimator *
+                           self.eff_dichoric *
+                           self.eff_grating *
+                           self.eff_AR_coating_grating *
+                           self.eff_vignetting[i] *
+                           self.eff_detector_camera_tp)
+
+        radius_telescope = settings.telescope[self.telescope_choice]['diameter'] * 0.1 / 2
+        self.A = constant.pi * radius_telescope ** 2  # cm^2
+
+        radius_fiber = self.d_fiber / 2
+        telescope_focal = settings.telescope[self.telescope_choice]["focal length"]
+        self.solid_angle = constant.pi * (radius_fiber / telescope_focal) ** 2 * (
+                206264.5 ** 2) # 206264.5 radian^2 to arcsec^2
+        photon_counts_con = np.zeros_like(self.eff_vignetting)
+        continuum = np.zeros_like(self.eff_vignetting)
+        I_continuum_erg = 10**(I_continuum/(-2.5))*3631/(3.34*10**4)/5000**2 # transfer AB mag to flux, assume λ=5000Å
+        field_points = settings.field_points
+        line_density = self.__set_line_density()
+        dispersion = self.__cal_dispersion(field_points, line_density)
+        pixel_size_1d = settings.detector[self.detector_choice]["pixel size"]
+        for i in range(len(settings.field_points)):
+            total_energy = I_continuum_erg * self.A * self.solid_angle * exposure_time  # erg
+            frequency = settings.speed_of_light / (self.wavelengths * 1e-9)
+            photon_energy = (settings.h * frequency) / 1e-7
+
+            photon_counts_con[i] = total_energy / photon_energy * self.eff[i] * dispersion[i] * (pixel_size_1d * 1e4)
+            continuum[i] = photon_counts_con[i] * self.QE
+        return continuum
+
     def cal_sky_background(self, surface_brightness, exposure_time):
         field_points = settings.field_points
 
@@ -274,8 +311,11 @@ class Analysis:
         return darknoise
 
     @staticmethod
-    def cal_SNR(signal, sky_noise, readnoise, darknoise):
-        SNR = signal / np.sqrt(signal + sky_noise + readnoise + darknoise)
+    def cal_SNR(signal, sky_noise, readnoise, darknoise, continuum, continuum_mode):
+        if continuum_mode == 'No':
+            SNR = signal / np.sqrt(signal + sky_noise + readnoise + darknoise)
+        else:
+            SNR = signal / np.sqrt(signal + sky_noise + readnoise + darknoise + continuum)
         return SNR
 
     def cal_resolution(self):
