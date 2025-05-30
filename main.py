@@ -9,14 +9,15 @@ import numpy as np
 st.set_page_config(layout="wide")
 
 def show_result():
-    analysis = Analysis(analysis_mode, default_setting, default_system, telescope_choice, d_fiber, detector_camera_choice,
+    analysis = Analysis(analysis_mode, continuum_mode, default_setting, default_system, telescope_choice, d_fiber, detector_camera_choice,
                         detector_choice, wavelengths, intrinsic_broadening)
 
     signal = analysis.cal_signal(I, exposure_time)
+    continuum = analysis.cal_continuum(I_continuum, exposure_time)
     sky_background = analysis.cal_sky_background(surface_brightness, exposure_time)
     read_noise = analysis.cal_read_noise()
     dark_noise = analysis.cal_dark_noise(is_temperature_change, exposure_time, temperature_change)
-    SNR = analysis.cal_SNR(signal, sky_background, read_noise, dark_noise)
+    SNR = analysis.cal_SNR(signal, sky_background, read_noise, dark_noise, continuum, continuum_mode)
     resolution = analysis.cal_resolution()
 
     spot_size = analysis.spot_size
@@ -96,8 +97,10 @@ if __name__ == "__main__":
         input = Panel()
 
         analysis_mode = input.analysis_mode
+        continuum_mode = input.continuum_mode
         wavelengths = input.wavelengths
         I = input.I
+        I_continuum = input.I_continuum
         exposure_time = input.exposure_time
         surface_brightness = input.surface_brightness
 
