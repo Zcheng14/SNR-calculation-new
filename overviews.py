@@ -5,12 +5,12 @@ import settings
 
 
 class Overview:
-    def __init__(self, default_setting, analysis_mode, wavelengths, exposure_time, I, intrinsic_broadening,
+    def __init__(self, default_setting, analysis_mode, continuum_mode, wavelengths, exposure_time, I, I_continuum, intrinsic_broadening,
                  surface_brightness,
                  telescope_choice, fiber_choice, detector_camera_choice, detector_choice, is_temperature_change,
                  temperature_change):
 
-        self.__basic_overview(analysis_mode, wavelengths, exposure_time, I, intrinsic_broadening, surface_brightness)
+        self.__basic_overview(analysis_mode, continuum_mode, wavelengths, exposure_time, I, I_continuum, intrinsic_broadening, surface_brightness)
 
         col1, col2 = st.columns(2)
 
@@ -24,18 +24,20 @@ class Overview:
             self.__detector_overview(detector_choice, is_temperature_change, temperature_change)
 
     @staticmethod
-    def __basic_overview(analysis_mode, wavelengths, exposure_time, I, intrinsic_broadening, surface_brightness):
+    def __basic_overview(analysis_mode, continuum_mode, wavelengths, exposure_time, I, I_continuum, intrinsic_broadening, surface_brightness):
         with st.container(border=True):
             if analysis_mode == "Single wavelength":
                 st.markdown(f"- Wavelength: {np.squeeze(wavelengths)} nm")
             st.markdown(f"- Exposure time: {exposure_time} s")
             if analysis_mode == "All wavelength":
                 st.markdown(f"- Emission-line flux: {I} erg/cm$^2$/s/arcsec$^2$")
+                if continuum_mode == 'Yes':
+                    st.markdown(f"- Continuum magnitude: {I_continuum} mag/arcsec$^2$")
             elif analysis_mode == "Single wavelength":
                 st.markdown(
                     f"- Emission-line flux: {I} erg/cm$^2$/s/arcsec$^2$\n  - Intrinsic broadening: {intrinsic_broadening} km/s")
             st.markdown(f"- Sky background surface brightness: {surface_brightness} mag/arcsec$^2$")
-
+            
     @staticmethod
     def __telescope_overview(telescope_choice):
         with st.container(border=True):
