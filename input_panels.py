@@ -104,8 +104,7 @@ class Panel:
                                          value=1e-17)
                 self.surface_brightness = st.number_input('Enter sky background surface brightness (mag/arcsec$^2$):',
                                                           value=21.5, format="%0.3f")
-                if self.continuum_mode == 'Yes':
-                    self.I_continuum = st.number_input('Enter Continuum magnitude (mag/arcsec$^2$):',
+                self.I_continuum = st.number_input('Enter Continuum magnitude (mag/arcsec$^2$):',
                                                           value=20, format="%0.3f")
 
         elif self.analysis_mode == "Single wavelength":
@@ -119,6 +118,8 @@ class Panel:
                                                             value=0)
                 self.surface_brightness = st.number_input('Enter sky background surface brightness (mag/arcsec$^2$):',
                                                           value=21.5, format="%0.3f")
+                self.I_continuum = st.number_input('Enter Continuum magnitude (mag/arcsec$^2$):',
+                                                          value=20, format="%0.3f")
 
     def __telescope_panel(self):
         with st.container(border=True):
