@@ -130,9 +130,11 @@ if __name__ == "__main__":
     with st.expander("Setting overview", expanded=True):
         setting_overview = Overview(default_setting,
                                     analysis_mode,
+                                    continuum_mode,
                                     wavelengths,
                                     exposure_time,
                                     I,
+                                    I_continuum,
                                     intrinsic_broadening,
                                     surface_brightness,
                                     telescope_choice,
