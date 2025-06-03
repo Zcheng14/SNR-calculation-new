@@ -291,7 +291,7 @@ class Analysis:
         pixel_size_1d = settings.detector[self.detector_choice]["pixel size"]
         sky_brightness = sky_brightness * dispersion * (pixel_size_1d * 1e4)  # electrons/s/pixel/arcsec^2/cm^2
 
-        self.sky_noise_per_pixel = sky_brightness * exposure_time * self.solid_angle * self.A * self.eff  # number of electrons
+        self.sky_noise_per_pixel = sky_brightness * exposure_time * self.solid_angle * self.A * self.eff * self.QE  # number of electrons
 
         sky_noise = self.sky_noise_per_pixel * (self.spot_size / pixel_size_1d)
         return sky_noise
