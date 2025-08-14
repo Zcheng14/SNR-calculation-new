@@ -32,7 +32,7 @@ class Overview:
             if analysis_mode == "All wavelength":
                 st.markdown(f"- Emission-line flux: {I} erg/cm$^2$/s/arcsec$^2$")
                 if continuum_mode == 'Yes':
-                    st.markdown(f"- Continuum magnitude: {I_continuum} mag/arcsec$^2$")
+                    st.markdown(f"- Continuum Flux: {I_continuum} erg/cm$^2$/s/$\AA$/arcsec$^2$")
             elif analysis_mode == "Single wavelength":
                 st.markdown(
                     f"- Emission-line flux: {I} erg/cm$^2$/s/arcsec$^2$\n  - Intrinsic broadening: {intrinsic_broadening} km/s")
