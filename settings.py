@@ -79,6 +79,13 @@ detector_camera = {
 }
 
 detector = {
+    "QHY461": {
+        "QE": current_path + "/data/QE/QHY461_QE.txt",
+        "pixel size": 3.76,  # um
+        "readnoise": 1.68,
+        "darkcurrent": 0.0015,
+        "temperature": -30
+    },
     "QHY600": {
         "QE": current_path + "/data/QE/QHY600_QE.txt",
         "pixel size": 3.76,  # um
@@ -93,13 +100,6 @@ detector = {
     #    "darkcurrent": 0.16048,  # T=-20 degree
     #    "temperature": -20
     #},
-    "QHY461": {
-        "QE": current_path + "/data/QE/QHY461_QE.txt",
-        "pixel size": 3.76,  # um
-        "readnoise": 1.68,
-        "darkcurrent": 0.0015,
-        "temperature": -30
-    },
     "Custom": {
         "QE": None,
         "pixel size": [None, None],
