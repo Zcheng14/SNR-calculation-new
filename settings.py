@@ -18,16 +18,16 @@ default_blue_wavelengths = np.arange(460, 511)
 default_red_wavelengths = np.arange(610, 691)
 
 default_system = {
+    "Custom design lens": {
+        "spot_path": current_path + "/data/spot_size/spot_custom.txt",
+        "wavelength_panel": [465,505,625,680],
+        "wavelength_range": np.concatenate((np.arange(465, 506), np.arange(625, 681)), axis=None)
+    },
     "Nikkor lens": {
         "spot_path": current_path + "/data/spot_size/spot_nikkor.txt",
         "wavelength_panel": [460,510,610,690],
         "wavelength_range": np.concatenate((default_blue_wavelengths, default_red_wavelengths), axis=None)
     },
-    "Custom design lens": {
-        "spot_path": current_path + "/data/spot_size/spot_custom.txt",
-        "wavelength_panel": [465,505,625,680],
-        "wavelength_range": np.concatenate((np.arange(465, 506), np.arange(625, 681)), axis=None)
-    }
 }
 
 cut = 510
@@ -53,20 +53,20 @@ fiber = {
 }
 
 detector_camera = {
-    "Nikkor 58mm f/0.95 S Noct": {
-        "focal length": 59.67,  # mm
-        "throughput": current_path + "/data/throughput/nikkor_throughput.txt",
-        "vignetting": {
-            "path": current_path + "/data/vignetting/vignetting_Nikkor.txt",
-            "wavelength_range": np.concatenate((default_blue_wavelengths, default_red_wavelengths), axis=None)
-            }
-    },
     "Custom design lens":{
         "focal length": 99.5,  # mm
         "throughput": None,
         "vignetting": {
             "path": current_path + "/data/vignetting/vignetting_custom.txt",
             "wavelength_range": np.concatenate((np.arange(465, 506), np.arange(625, 681)), axis=None)
+            }
+    },
+    "Nikkor 58mm f/0.95 S Noct": {
+        "focal length": 59.67,  # mm
+        "throughput": current_path + "/data/throughput/nikkor_throughput.txt",
+        "vignetting": {
+            "path": current_path + "/data/vignetting/vignetting_Nikkor.txt",
+            "wavelength_range": np.concatenate((default_blue_wavelengths, default_red_wavelengths), axis=None)
             }
     },
     "Custom": {

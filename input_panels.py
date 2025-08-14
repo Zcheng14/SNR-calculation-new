@@ -12,9 +12,9 @@ def initialize():
     if "default_index_fiber" not in st.session_state:
         st.session_state.default_index_fiber = 0
     if "default_index_detector_camera" not in st.session_state:
-        st.session_state.default_index_detector_camera = 0
+        st.session_state.default_index_detector_camera = 1
     if "default_index_detector" not in st.session_state:
-        st.session_state.default_index_detector = 0
+        st.session_state.default_index_detector = 1
 
     if "disable_all" not in st.session_state:
         st.session_state.disable_all = True
