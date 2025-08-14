@@ -86,6 +86,7 @@ class Formula:
         spot_size = image_size
         cos_beta = Formula.cos_beta(line_density, wavelengths, field_point)
         beta = np.arccos(cos_beta)
+        incident_angle = math.radians(settings.incident_angle)
         cos_gamma = Formula.cos_gamma(field_point)
         dl_db = focal_length / (np.cos(beta - incident_angle))**2
         return (line_density * (wavelengths / 1000) * dl_db) / (spot_size * cos_beta * cos_gamma)
