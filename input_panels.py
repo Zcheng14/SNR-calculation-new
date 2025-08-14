@@ -21,7 +21,7 @@ def initialize():
     if "default_setting" not in st.session_state:
         st.session_state.default_setting = True
     if "default_system" not in st.session_state:
-        st.session_state.default_system = "Nikkor lens"
+        st.session_state.default_system = "Custom design lens"
 
 def default_setting_callback():
 
