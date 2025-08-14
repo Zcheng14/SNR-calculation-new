@@ -1,3 +1,9 @@
+# Updating on 2025.08.14
+To use the new app, please visit [https://snr-calculation-new-zcheng.streamlit.app/](https://snr-calculation-new-zcheng.streamlit.app/). Some new feaures:
+1. The default setting of the system has been changed to the Custom design lens.***the Throughput is NOT be considered NOW.***
+2. The default exposure time is 1800s.
+3. Provide an option of whether to include the continuum flux.
+
 # Introduction
 The code utilizes the Python language to estimate the signal-to-noise ratio (SNR) and spectral resolution of the AMASE-P system. To use the app, please visit [https://snr-calculation-cheung-yiu-hung.streamlit.app/](https://snr-calculation-cheung-yiu-hung.streamlit.app/). Select the desired settings from the sidebar on the website. If you are unable to see the sidebar, simply expand it by clicking the ">" symbol located on the top left-hand corner.
 
