@@ -1,6 +1,6 @@
 # Updating on 2025.08.14
 To use the new app, please visit [https://snr-calculation-new-zcheng.streamlit.app/](https://snr-calculation-new-zcheng.streamlit.app/). Some new feaures:
-1. The default setting of the system has been changed to the Custom design lens.***the Throughput is NOT be considered NOW.***
+1. The default setting of the system has been changed to the Custom design lens. ***[The throughput of Spectrograph camera is NOT be considered NOW.]***
 2. The default exposure time is 1800s.
 3. Provide an option of whether to include the continuum flux.
 
