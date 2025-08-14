@@ -39,11 +39,12 @@ telescope = {
         "focal length": 392.5,  # mm
         "throughput": current_path + "/data/throughput/canon_throughput.txt"
     },
-    "Custom": {
-        "diameter": None,
-        "focal length": None,
-        "throughput": None
-    }
+    
+    #"Custom": {
+    #    "diameter": None,
+    #    "focal length": None,
+    #    "throughput": None
+    #}
 }
 
 fiber = {
