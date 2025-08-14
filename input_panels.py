@@ -99,27 +99,27 @@ class Panel:
 
                 self.wavelengths = np.concatenate((np.arange(wavelength_blue[0], wavelength_blue[1] + 1),
                                                    np.arange(wavelength_red[0], wavelength_red[1] + 1)), axis=None)
-                self.exposure_time = st.number_input("Enter exposure time (s)", value=900)
+                self.exposure_time = st.number_input("Enter exposure time (s)", value=1800)
                 self.I = st.number_input('Enter emission-line flux (erg/cm$^2$/s/arcsec$^2$):', format='%g',
                                          value=1e-17)
                 self.surface_brightness = st.number_input('Enter sky background surface brightness (mag/arcsec$^2$):',
                                                           value=21.5, format="%0.3f")
-                self.I_continuum = st.number_input('Enter Continuum magnitude (mag/arcsec$^2$):',
-                                                          value=20.0, format="%0.3f")
+                self.I_continuum = st.number_input('Enter Continuum Flux (erg/cm$^2$/s/$\AA$/arcsec$^2$):',
+                                                          value=1e-18, format="%g")
 
         elif self.analysis_mode == "Single wavelength":
             with st.container(border=True):
                 wavelengths = st.number_input("Enter the wavelength (nm):")
                 self.wavelengths = np.array(wavelengths, ndmin=1)
-                self.exposure_time = st.slider("Exposure time (s)", min_value=0, max_value=1800, value=900)
+                self.exposure_time = st.slider("Exposure time (s)", min_value=0, max_value=1800, value=1800)
                 self.I = st.number_input("Enter the emission-line flux (erg/cm$^2$/s/arcsec$^2$):", format='%g',
                                          value=1e-17)
                 self.intrinsic_broadening = st.number_input("Enter the intrinsic broadening (km/s):", format='%g',
                                                             value=0)
                 self.surface_brightness = st.number_input('Enter sky background surface brightness (mag/arcsec$^2$):',
                                                           value=21.5, format="%0.3f")
-                self.I_continuum = st.number_input('Enter Continuum magnitude (mag/arcsec$^2$):',
-                                                          value=20.0, format="%0.3f")
+                self.I_continuum = st.number_input('Enter Continuum Flux (erg/cm$^2$/s/$\AA$/arcsec$^2$):',
+                                                          value=1e-18, format="%g")
 
     def __telescope_panel(self):
         with st.container(border=True):

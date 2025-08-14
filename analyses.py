@@ -259,7 +259,8 @@ class Analysis:
                 206264.5 ** 2) # 206264.5 radian^2 to arcsec^2
         photon_counts_con = np.zeros_like(self.eff_vignetting)
         continuum = np.zeros_like(self.eff_vignetting)
-        I_continuum_erg = 10**(I_continuum/(-2.5))*3631/(3.34*10**4)/5000**2 # transfer AB mag to flux, assume λ=5000Å
+        #I_continuum_erg = 10**(I_continuum/(-2.5))*3631/(3.34*10**4)/5000**2 # transfer AB mag to flux, assume λ=5000Å
+        I_continuum_erg = I_continuum
         field_points = settings.field_points
         line_density = self.__set_line_density()
         dispersion = self.__cal_dispersion(field_points, line_density)
