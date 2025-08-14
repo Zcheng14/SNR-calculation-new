@@ -23,7 +23,7 @@ default_system = {
         "wavelength_panel": [460,510,610,690],
         "wavelength_range": np.concatenate((default_blue_wavelengths, default_red_wavelengths), axis=None)
     },
-    "f/1.5 custom design lens": {
+    "Custom design lens": {
         "spot_path": current_path + "/data/spot_size/spot_custom.txt",
         "wavelength_panel": [465,505,625,680],
         "wavelength_range": np.concatenate((np.arange(465, 506), np.arange(625, 681)), axis=None)
@@ -60,8 +60,8 @@ detector_camera = {
             "wavelength_range": np.concatenate((default_blue_wavelengths, default_red_wavelengths), axis=None)
             }
     },
-    "f/1.5 custom design lens":{
-        "focal length": 105,  # mm
+    "Custom design lens":{
+        "focal length": 99.5,  # mm
         "throughput": None,
         "vignetting": {
             "path": current_path + "/data/vignetting/vignetting_custom.txt",
@@ -84,14 +84,21 @@ detector = {
         "pixel size": 3.76,  # um
         "readnoise": 1.683,
         "darkcurrent": 0.0022,
-        "temperature": -20
+        "temperature": -30
     },
-    "QHY4040": {
-        "QE": current_path + "/data/QE/QHY4040_QE.txt",
-        "pixel size": 9,  # um
-        "readnoise": 0.81,
-        "darkcurrent": 0.16048,  # T=-20 degree
-        "temperature": -20
+    #"QHY4040": {
+    #    "QE": current_path + "/data/QE/QHY4040_QE.txt",
+    #    "pixel size": 9,  # um
+    #    "readnoise": 0.81,
+    #    "darkcurrent": 0.16048,  # T=-20 degree
+    #    "temperature": -20
+    #},
+    "QHY461": {
+        "QE": current_path + "/data/QE/QHY461_QE.txt",
+        "pixel size": 3.76,  # um
+        "readnoise": 1.68,
+        "darkcurrent": 0.0015,
+        "temperature": -30
     },
     "Custom": {
         "QE": None,

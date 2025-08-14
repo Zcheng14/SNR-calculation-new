@@ -26,16 +26,16 @@ def initialize():
 def default_setting_callback():
 
     if st.session_state.default_setting is True:
+        if st.session_state.default_system == "Custom design lens":
+            st.session_state.default_index_telescope = 0
+            st.session_state.default_index_fiber = 0
+            st.session_state.default_index_detector_camera = 1
+            st.session_state.default_index_detector = 1
         if st.session_state.default_system == "Nikkor lens":
             st.session_state.default_index_telescope = 0
             st.session_state.default_index_fiber = 0
             st.session_state.default_index_detector_camera = 0
             st.session_state.default_index_detector = 0
-        elif st.session_state.default_system == "f/1.5 custom design lens":
-            st.session_state.default_index_telescope = 0
-            st.session_state.default_index_fiber = 0
-            st.session_state.default_index_detector_camera = 1
-            st.session_state.default_index_detector = 1
         st.session_state.disable_all = True
     elif st.session_state.default_setting is False:
         st.session_state.default_index = None
@@ -123,19 +123,19 @@ class Panel:
 
     def __telescope_panel(self):
         with st.container(border=True):
-            self.telescope_choice = st.selectbox("Choose the telescope:", list(settings.telescope.keys()),
+            self.telescope_choice = st.selectbox("Choose the telescope(focal ratio):", list(settings.telescope.keys()),
                                                  index=st.session_state.default_index_telescope,
                                                  placeholder="Select telescope...",
                                                  disabled=st.session_state.disable_all)
-            if self.telescope_choice == "Custom":
-                telescope_popover = False
-            else:
-                telescope_popover = True
-            with st.popover("Parameters of custom telescope", disabled=telescope_popover):
-                settings.telescope['Custom']['focal length'] = st.number_input(
-                    "Enter the focal length (mm) of the telescope:")
-                settings.telescope['Custom']['diameter'] = st.number_input(
-                    "Enter the dimater (mm) of the enterance pupil of the telescope?", format="%0.4f")
+            #if self.telescope_choice == "Custom":
+            #    telescope_popover = False
+            #else:
+            #    telescope_popover = True
+            #with st.popover("Parameters of custom telescope", disabled=telescope_popover):
+            #    settings.telescope['Custom']['focal length'] = st.number_input(
+            #        "Enter the focal length (mm) of the telescope:")
+            #    settings.telescope['Custom']['diameter'] = st.number_input(
+            #        "Enter the dimater (mm) of the enterance pupil of the telescope?", format="%0.4f")
 
     def __fiber_panel(self):
         with st.container(border=True):
