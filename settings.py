@@ -39,7 +39,10 @@ telescope = {
         "focal length": 392.5,  # mm
         "throughput": current_path + "/data/throughput/canon_throughput.txt"
     },
+<<<<<<< HEAD
     
+=======
+>>>>>>> faff4b20966c760eb1f5b72214be81c4470c8388
     #"Custom": {
     #    "diameter": None,
     #    "focal length": None,
@@ -136,3 +139,4 @@ line_density_blue = 3559  # lines/mm in blue channel
 line_density_red = 2632  # lines/mm in red channel
 
 incident_angle = 61.93  # degree
+
