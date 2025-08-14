@@ -85,8 +85,10 @@ class Formula:
         focal_length = settings.detector_camera[detector_camera_choice]['focal length']
         spot_size = image_size
         cos_beta = Formula.cos_beta(line_density, wavelengths, field_point)
+        beta = np.arccos(cos_beta)
         cos_gamma = Formula.cos_gamma(field_point)
-        return (line_density * (wavelengths / 1000) * focal_length) / (spot_size * cos_beta * cos_gamma)
+        dl_db = focal_length / (np.cos(beta - incident_angle))**2
+        return (line_density * (wavelengths / 1000) * dl_db) / (spot_size * cos_beta * cos_gamma)
 
 
 def find_spot_size(analysis_mode, default_setting, default_system, detector_camera_choice, d_fiber, wavelengths):
