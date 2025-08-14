@@ -12,9 +12,9 @@ def initialize():
     if "default_index_fiber" not in st.session_state:
         st.session_state.default_index_fiber = 0
     if "default_index_detector_camera" not in st.session_state:
-        st.session_state.default_index_detector_camera = 1
+        st.session_state.default_index_detector_camera = 0
     if "default_index_detector" not in st.session_state:
-        st.session_state.default_index_detector = 1
+        st.session_state.default_index_detector = 0
 
     if "disable_all" not in st.session_state:
         st.session_state.disable_all = True
@@ -29,13 +29,13 @@ def default_setting_callback():
         if st.session_state.default_system == "Custom design lens":
             st.session_state.default_index_telescope = 0
             st.session_state.default_index_fiber = 0
-            st.session_state.default_index_detector_camera = 1
-            st.session_state.default_index_detector = 1
+            st.session_state.default_index_detector_camera = 0
+            st.session_state.default_index_detector = 0
         if st.session_state.default_system == "Nikkor lens":
             st.session_state.default_index_telescope = 0
             st.session_state.default_index_fiber = 0
-            st.session_state.default_index_detector_camera = 0
-            st.session_state.default_index_detector = 0
+            st.session_state.default_index_detector_camera = 1
+            st.session_state.default_index_detector = 1
         st.session_state.disable_all = True
     elif st.session_state.default_setting is False:
         st.session_state.default_index = None
