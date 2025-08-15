@@ -58,7 +58,9 @@ detector_camera = {
         "vignetting": {
             "path": current_path + "/data/vignetting/vignetting_custom.txt",
             "wavelength_range": np.concatenate((np.arange(465, 506), np.arange(625, 681)), axis=None)
-            }
+            },
+        "emergent_angle0_blue": 59.89,
+        "emergent_angle0_red": 59.61 #degree
     },
     "Nikkor 58mm f/0.95 S Noct": {
         "focal length": 59.67,  # mm
@@ -66,7 +68,9 @@ detector_camera = {
         "vignetting": {
             "path": current_path + "/data/vignetting/vignetting_Nikkor.txt",
             "wavelength_range": np.concatenate((default_blue_wavelengths, default_red_wavelengths), axis=None)
-            }
+            },
+        "emergent_angle0_blue": 61.93,
+        "emergent_angle0_red": 61.93 #degree
     },
     "Custom": {
         "focal length": None,  # mm
@@ -135,4 +139,3 @@ line_density_blue = 3559  # lines/mm in blue channel
 line_density_red = 2632  # lines/mm in red channel
 
 incident_angle = 61.93  # degree
-

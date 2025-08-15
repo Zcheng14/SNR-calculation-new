@@ -83,12 +83,25 @@ class Formula:
     @staticmethod
     def resolution(wavelengths, detector_camera_choice, image_size, line_density, field_point):
         focal_length = settings.detector_camera[detector_camera_choice]['focal length']
+        emergent_angle0_blue = settings.detector_camera[detector_camera_choice]['emergent_angle0_blue']
+        emergent_angle0_red = settings.detector_camera[detector_camera_choice]['emergent_angle0_red']
+        e_angle0 = np.zeros_like(wavelengths)
+        if len(wavelengths)>1:
+            cut_index = np.where(wavelengths <= settings.cut)[0][-1]
+            e_angle0[:cut_index + 1] = emergent_angle0_blue
+            e_angle0[cut_index + 1:] = emergent_angle0_red
+        else:
+            if wavelengths <= settings.cut:
+                e_angle0 = emergent_angle0_blue
+            else:
+                e_angle0 = emergent_angle0_red
         spot_size = image_size
         cos_beta = Formula.cos_beta(line_density, wavelengths, field_point)
         beta = np.arccos(cos_beta)
-        incident_angle = math.radians(settings.incident_angle)
+        #incident_angle = math.radians(settings.incident_angle)
+        e_angle0 = np.radians(e_angle0)
         cos_gamma = Formula.cos_gamma(field_point)
-        dl_db = focal_length / (np.cos(beta - incident_angle))**2
+        dl_db = focal_length / (np.cos(beta - e_angle0))**2
         return (line_density * (wavelengths / 1000) * dl_db) / (spot_size * cos_beta * cos_gamma)
 
 
