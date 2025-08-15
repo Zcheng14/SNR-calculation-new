@@ -1,5 +1,10 @@
+# Updating on 2025.08.15
+New features:
+1. Provide an option of spot size during calculation: Simulation or Theoretical calculation. The results of Theoretical calculation can be displayed rightly. ***[For Custom lens, the current simulation data is wrong, since the Focal length has changed from 105 mm to 99.5 mm]***
+2. In the new design of the spectrograph with the custom lens, we align the custom lens with the output angle at 663nm in the red and 491nm in the blue. Now the dispersion formula is cos(beta-beta_0), where beta_0 is the emergent angle for 491nm and 663nm respectively. 
+
 # Updating on 2025.08.14
-To use the new app, please visit [https://snr-calculation-new-zcheng.streamlit.app/](https://snr-calculation-new-zcheng.streamlit.app/). Some new feaures:
+To use the new app, please visit [https://snr-calculation-new-zcheng.streamlit.app/](https://snr-calculation-new-zcheng.streamlit.app/). Some new features:
 1. The default setting of the system has been changed to the Custom design lens. ***[The throughput of Spectrograph camera is NOT be considered NOW.]***
 2. The default exposure time is 1800s.
 3. Provide an option of whether to include the continuum flux.
