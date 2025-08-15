@@ -47,7 +47,9 @@ class Panel:
     def __init__(self):
         self.analysis_mode = st.radio("Choose the analysis mode:", ["All wavelength", "Single wavelength"])
 
-        self.continuum_mode = st.radio("If consider the continuum flux:", ["No", "Yes"])        
+        self.continuum_mode = st.radio("If consider the continuum flux:", ["No", "Yes"])
+
+        self.spot_size_mode = st.radio("Spot Size:",["Simulation","Theoretical calculation"])
 
         self.__default_panel()
 

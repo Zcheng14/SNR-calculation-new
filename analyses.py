@@ -92,8 +92,9 @@ class Formula:
         return (line_density * (wavelengths / 1000) * dl_db) / (spot_size * cos_beta * cos_gamma)
 
 
-def find_spot_size(analysis_mode, default_setting, default_system, detector_camera_choice, d_fiber, wavelengths):
-    if default_setting:
+def find_spot_size(analysis_mode, default_setting, default_system, detector_camera_choice, d_fiber, wavelengths, spot_size_mode):
+    #if default_setting:
+    if spot_size_mode == "Simulation":
         path = settings.default_system[default_system]["spot_path"]
         return data_files.SpotSizeFiles(path).interpolate(wavelengths, default_system)
     else:
@@ -138,7 +139,7 @@ def cal_num_pixel(analysis_mode, spot_size, detector_choice, wavelength, intrins
 
 
 class Analysis:
-    def __init__(self, analysis_mode, continuum_mode, default_setting, default_system, telescope_choice, d_fiber, detector_camera_choice,
+    def __init__(self, analysis_mode, continuum_mode, spot_size_mode, default_setting, default_system, telescope_choice, d_fiber, detector_camera_choice,
                 detector_choice,
                 wavelengths, intrinsic_broadening=None):
         self.analysis_mode = analysis_mode
@@ -148,6 +149,7 @@ class Analysis:
         self.detector_choice = detector_choice
         self.wavelengths = wavelengths
         self.continuum_mode = continuum_mode
+        self.spot_size_mode = spot_size_mode
 
         # eff
         self.eff_focal_plane_module = ThroughputContributors.load_eff_focal_plane_module(wavelengths)

@@ -9,7 +9,7 @@ import numpy as np
 st.set_page_config(layout="wide")
 
 def show_result():
-    analysis = Analysis(analysis_mode, continuum_mode, default_setting, default_system, telescope_choice, d_fiber, detector_camera_choice,
+    analysis = Analysis(analysis_mode, continuum_mode, spot_size_mode, default_setting, default_system, telescope_choice, d_fiber, detector_camera_choice,
                         detector_choice, wavelengths, intrinsic_broadening)
 
     signal = analysis.cal_signal(I, exposure_time)
@@ -98,6 +98,7 @@ if __name__ == "__main__":
 
         analysis_mode = input.analysis_mode
         continuum_mode = input.continuum_mode
+        spot_size_mode = input.spot_size_mode
         wavelengths = input.wavelengths
         I = input.I
         I_continuum = input.I_continuum
@@ -120,7 +121,7 @@ if __name__ == "__main__":
         d_fiber = input.d_fiber
         detector_camera_choice = input.detector_camera_choice
         detector_choice = input.detector_choice
-
+        
         is_temperature_change = input.is_temperature_change
         if is_temperature_change is True:
             temperature_change = input.temperature_change
@@ -131,6 +132,7 @@ if __name__ == "__main__":
         setting_overview = Overview(default_setting,
                                     analysis_mode,
                                     continuum_mode,
+                                    spot_size_mode,
                                     wavelengths,
                                     exposure_time,
                                     I,

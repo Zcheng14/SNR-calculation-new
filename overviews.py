@@ -5,12 +5,12 @@ import settings
 
 
 class Overview:
-    def __init__(self, default_setting, analysis_mode, continuum_mode, wavelengths, exposure_time, I, I_continuum, intrinsic_broadening,
+    def __init__(self, default_setting, analysis_mode, continuum_mode, spot_size_mode, wavelengths, exposure_time, I, I_continuum, intrinsic_broadening,
                  surface_brightness,
                  telescope_choice, fiber_choice, detector_camera_choice, detector_choice, is_temperature_change,
                  temperature_change):
 
-        self.__basic_overview(analysis_mode, continuum_mode, wavelengths, exposure_time, I, I_continuum, intrinsic_broadening, surface_brightness)
+        self.__basic_overview(analysis_mode, continuum_mode, spot_size_mode, wavelengths, exposure_time, I, I_continuum, intrinsic_broadening, surface_brightness)
 
         col1, col2 = st.columns(2)
 
@@ -24,7 +24,7 @@ class Overview:
             self.__detector_overview(detector_choice, is_temperature_change, temperature_change)
 
     @staticmethod
-    def __basic_overview(analysis_mode, continuum_mode, wavelengths, exposure_time, I, I_continuum, intrinsic_broadening, surface_brightness):
+    def __basic_overview(analysis_mode, continuum_mode, spot_size_mode, wavelengths, exposure_time, I, I_continuum, intrinsic_broadening, surface_brightness):
         with st.container(border=True):
             if analysis_mode == "Single wavelength":
                 st.markdown(f"- Wavelength: {np.squeeze(wavelengths)} nm")
@@ -136,7 +136,8 @@ class Overview:
     def __spot_size_overview(default_setting):
         with st.container(border=True):
             st.markdown('Spot size')
-            if default_setting is True:
+            #if default_setting is True:
+            if spot_size_mode == "Simulation":
                 st.markdown(f"- Theoretical calculation: {chr(0x274C)}")
                 st.markdown(f"- Simulation: {chr(0x2705)}")
             else:
