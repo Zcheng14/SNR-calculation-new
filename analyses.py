@@ -234,7 +234,10 @@ class Analysis:
             cos_gamma = Formula.cos_gamma(field_points)
             cos_beta = Formula.cos_beta(line_density, self.wavelengths, field_points[i])
             detectr_focal = settings.detector_camera[self.detector_camera_choice]["focal length"]
-            dispersion[i] = cos_gamma[i] * cos_beta / (detectr_focal * line_density)
+            beta = np.arccos(cos_beta)
+            incident_angle = math.radians(settings.incident_angle)
+            dl_db =  detectr_focal / (np.cos(beta-incident_angle))**2
+            dispersion[i] = cos_gamma[i] * cos_beta / (dl_db * line_density)
         return dispersion
 
     def cal_continuum(self, I_continuum, exposure_time):
