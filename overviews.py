@@ -17,7 +17,7 @@ class Overview:
         with col1:
             self.__telescope_overview(telescope_choice)
             self.__fiber_overview(fiber_choice)
-            self.__spot_size_overview(default_setting)
+            self.__spot_size_overview(default_setting, spot_size_mode)
 
         with col2:
             self.__detector_camera_overview(detector_camera_choice)
@@ -133,7 +133,7 @@ class Overview:
                     st.markdown(f"- QE: {chr(0x2705)}")
 
     @staticmethod
-    def __spot_size_overview(default_setting):
+    def __spot_size_overview(default_setting, spot_size_mode):
         with st.container(border=True):
             st.markdown('Spot size')
             #if default_setting is True:
