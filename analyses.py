@@ -176,7 +176,7 @@ class Analysis:
         path = settings.detector[detector_choice]['QE']
         self.QE = ThroughputContributors.load_QE(path, wavelengths)
 
-        self.spot_size = find_spot_size(analysis_mode, default_setting, default_system, detector_camera_choice, d_fiber, wavelengths)
+        self.spot_size = find_spot_size(analysis_mode, default_setting, default_system, detector_camera_choice, d_fiber, wavelengths, spot_size_mode)
         self.num_pixel = cal_num_pixel(analysis_mode, self.spot_size, detector_choice, wavelengths,
                                        intrinsic_broadening)
 
