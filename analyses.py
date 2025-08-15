@@ -118,8 +118,9 @@ def find_spot_size(analysis_mode, default_setting, default_system, detector_came
                     cos_out_angle = Formula.cos_beta(settings.line_density_blue, wavelengths, settings.field_points[i])
                 else:
                     cos_out_angle = Formula.cos_beta(settings.line_density_red, wavelengths, settings.field_points[i])
-
-            spot_size[i] = d_fiber * (focal_length / f_collimator) * (cos_in_angle / cos_out_angle)
+            in_angle = math.radians(settings.incident_angle)
+            out_angle = np.arccos(cos_out_angle)
+            spot_size[i] = d_fiber * (focal_length / f_collimator) * (cos_in_angle / cos_out_angle) / (np.cos(out_angle - in_angle))**2
     return spot_size * 1e3
 
 
