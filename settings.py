@@ -86,9 +86,9 @@ detector = {
     "QHY461": {
         "QE": current_path + "/data/QE/QHY461_QE.txt",
         "pixel size": 3.76,  # um
-        "readnoise": 1.68,
-        "darkcurrent": 0.0015,
-        "temperature": -30
+        "readnoise": 1.32,
+        "darkcurrent": 6e-5,
+        "temperature": -20
     },
     "QHY600": {
         "QE": current_path + "/data/QE/QHY600_QE.txt",
