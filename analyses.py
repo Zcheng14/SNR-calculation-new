@@ -101,7 +101,7 @@ class Formula:
         #incident_angle = math.radians(settings.incident_angle)
         e_angle0 = np.radians(e_angle0)
         cos_gamma = Formula.cos_gamma(field_point)
-        dl_db = focal_length / (np.cos(beta - e_angle0))**2
+        dl_db = focal_length / (np.cos(beta - e_angle0))**2 / cos_gamma
         return (line_density * (wavelengths / 1000) * dl_db) / (spot_size * cos_beta * cos_gamma)
 
 
@@ -147,7 +147,8 @@ def find_spot_size(analysis_mode, default_setting, default_system, detector_came
             e_angle0 = np.radians(e_angle0)
             #in_angle = math.radians(settings.incident_angle)
             out_angle = np.arccos(cos_out_angle)
-            spot_size[i] = d_fiber * (focal_length / f_collimator) * (cos_in_angle / cos_out_angle) / (np.cos(out_angle - e_angle0))**2
+            cos_gamma = Formula.cos_gamma(settings.field_points)
+            spot_size[i] = d_fiber * (focal_length / f_collimator) * (cos_in_angle / cos_out_angle) / (np.cos(out_angle - e_angle0))**2 / (cos_gamma)**2
     return spot_size * 1e3
 
 
