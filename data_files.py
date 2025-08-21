@@ -7,7 +7,13 @@ class DataTextFile():
         self.data = np.loadtxt(path)
 
     def interpolate(self, x):
-        data_interpolated = np.interp(x, self.data[:, 0], self.data[:, 1])
+        #data_interpolated = np.interp(x, self.data[:, 0], self.data[:, 1])
+        data_interpolated = np.zeros((len(settings.field_points), len(x)))
+        for i in range(len(settings.field_points)):
+            if self.data.shape[1] > 2:
+                data_interpolated[i] = np.interp(x, self.data[:, 0], self.data[:,i+1])
+            else:
+                data_interpolated[i] = np.interp(x, self.data[:, 0], self.data[:,1])
         return data_interpolated
 
 

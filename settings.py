@@ -54,7 +54,7 @@ fiber = {
 detector_camera = {
     "Custom design lens":{
         "focal length": 99.5,  # mm
-        "throughput": None,
+        "throughput": current_path + "/data/throughput/customlens_throughput.txt",
         "vignetting": {
             "path": current_path + "/data/vignetting/vignetting_custom.txt",
             "wavelength_range": np.concatenate((np.arange(465, 506), np.arange(625, 681)), axis=None)
