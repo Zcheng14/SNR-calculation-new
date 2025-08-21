@@ -1,3 +1,8 @@
+# Updating on 2025.08.21
+New features:
+1. Add the simulation spot size data of custom lens.
+2. Add the throughput of customlens.
+
 # Updating on 2025.08.15
 New features:
 1. Provide an option of spot size during calculation: Simulation or Theoretical calculation. The results of Theoretical calculation can be displayed rightly. ***[For Custom lens, the current simulation data is wrong, since the Focal length has changed from 105 mm to 99.5 mm]***
