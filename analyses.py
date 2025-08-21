@@ -55,14 +55,16 @@ class ThroughputContributors:
         if path is not None:
             return data_files.DataTextFile(path).interpolate(wavelengths)
         else:
-            return np.ones_like(wavelengths)
+            #return np.ones_like(wavelengths)
+            return np.ones([len(settings.field_points), len(wavelengths)])
 
     @staticmethod
     def load_QE(path, wavelengths):
         if path is not None:
             return data_files.DataTextFile(path).interpolate(wavelengths)
         else:
-            return np.ones_like(wavelengths)
+            #return np.ones_like(wavelengths)
+            return np.ones([len(settings.field_points), len(wavelengths)])
 
 
 class Formula:
@@ -210,8 +212,8 @@ class Analysis:
     def cal_signal(self, I, exposure_time):
         self.eff = np.zeros_like(self.eff_vignetting)
         for i in range(len(settings.field_points)):
-            self.eff[i] = (self.eff_focal_plane_module *
-                           self.eff_telescope_tp *
+            self.eff[i] = (self.eff_focal_plane_module[i] *
+                           self.eff_telescope_tp[i] *
                            self.eff_fiber_transmission ** 2 *
                            self.eff_collimator *
                            self.eff_dichoric *
@@ -238,7 +240,7 @@ class Analysis:
 
             photon_counts[i] = total_energy / photon_energy * self.eff[i]
 
-            signal[i] = photon_counts[i] * self.QE
+            signal[i] = photon_counts[i] * self.QE[i]
 
         return signal
 
@@ -273,8 +275,8 @@ class Analysis:
     def cal_continuum(self, I_continuum, exposure_time):
         self.eff = np.zeros_like(self.eff_vignetting)
         for i in range(len(settings.field_points)):
-            self.eff[i] = (self.eff_focal_plane_module *
-                           self.eff_telescope_tp *
+            self.eff[i] = (self.eff_focal_plane_module[i] *
+                           self.eff_telescope_tp[i] *
                            self.eff_fiber_transmission ** 2 *
                            self.eff_collimator *
                            self.eff_dichoric *
@@ -304,7 +306,7 @@ class Analysis:
             photon_energy = (settings.h * frequency) / 1e-7
 
             photon_counts_con[i] = total_energy / photon_energy * self.eff[i] * dispersion[i] * (pixel_size_1d * 1e4)
-            continuum[i] = photon_counts_con[i] * self.QE
+            continuum[i] = photon_counts_con[i] * self.QE[i]
         return continuum
 
     def cal_sky_background(self, surface_brightness, exposure_time):
