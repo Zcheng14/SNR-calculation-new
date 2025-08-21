@@ -1,7 +1,7 @@
 # Updating on 2025.08.21
 New features:
 1. Add the simulation spot size data of custom lens.
-2. Add the throughput of customlens.
+2. Add the throughput of custom lens.
 
 # Updating on 2025.08.15
 New features:
