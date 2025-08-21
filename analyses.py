@@ -218,7 +218,7 @@ class Analysis:
                            self.eff_grating *
                            self.eff_AR_coating_grating *
                            self.eff_vignetting[i] *
-                           self.eff_detector_camera_tp)
+                           self.eff_detector_camera_tp[i])
 
         radius_telescope = settings.telescope[self.telescope_choice]['diameter'] * 0.1 / 2
         self.A = constant.pi * radius_telescope ** 2  # cm^2
@@ -281,7 +281,7 @@ class Analysis:
                            self.eff_grating *
                            self.eff_AR_coating_grating *
                            self.eff_vignetting[i] *
-                           self.eff_detector_camera_tp)
+                           self.eff_detector_camera_tp[i])
 
         radius_telescope = settings.telescope[self.telescope_choice]['diameter'] * 0.1 / 2
         self.A = constant.pi * radius_telescope ** 2  # cm^2
