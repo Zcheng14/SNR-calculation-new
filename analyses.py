@@ -262,13 +262,25 @@ class Analysis:
 
     def __cal_dispersion(self, field_points, line_density):
         dispersion = np.zeros_like(self.eff_vignetting)  # d\lambda/dl
+        emergent_angle0_blue = settings.detector_camera[self.detector_camera_choice]['emergent_angle0_blue']
+        emergent_angle0_red = settings.detector_camera[self.detector_camera_choice]['emergent_angle0_red']
+        e_angle0 = np.zeros_like(self.wavelengths)
+        if len(self.wavelengths)>1:
+            cut_index = np.where(self.wavelengths <= settings.cut)[0][-1]
+            e_angle0[:cut_index + 1] = emergent_angle0_blue
+            e_angle0[cut_index + 1:] = emergent_angle0_red
+        else:
+            if self.wavelengths <= settings.cut:
+                e_angle0 = emergent_angle0_blue
+            else:
+                e_angle0 = emergent_angle0_red
         for i in range(len(field_points)):
             cos_gamma = Formula.cos_gamma(field_points)
             cos_beta = Formula.cos_beta(line_density, self.wavelengths, field_points[i])
             detectr_focal = settings.detector_camera[self.detector_camera_choice]["focal length"]
             beta = np.arccos(cos_beta)
-            incident_angle = math.radians(settings.incident_angle)
-            dl_db =  detectr_focal / (np.cos(beta-incident_angle))**2
+            #incident_angle = math.radians(settings.incident_angle)
+            dl_db =  detectr_focal / (np.cos(beta-e_angle0))**2 / cos_gamma[i]
             dispersion[i] = cos_gamma[i] * cos_beta / (dl_db * line_density)
         return dispersion
 
