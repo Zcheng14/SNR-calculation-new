@@ -12,8 +12,8 @@ def show_result():
     analysis = Analysis(analysis_mode, continuum_mode, spot_size_mode, default_setting, default_system, telescope_choice, d_fiber, detector_camera_choice,
                         detector_choice, wavelengths, intrinsic_broadening)
 
-    signal = analysis.cal_signal(I, exposure_time)
-    continuum = analysis.cal_continuum(I_continuum, exposure_time)
+    signal = analysis.cal_signal(I, exposure_time, detector_camera_choice)
+    continuum = analysis.cal_continuum(I_continuum, exposure_time, detector_camera_choice)
     sky_background = analysis.cal_sky_background(surface_brightness, exposure_time)
     read_noise = analysis.cal_read_noise()
     dark_noise = analysis.cal_dark_noise(is_temperature_change, exposure_time, temperature_change)

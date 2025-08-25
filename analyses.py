@@ -209,10 +209,20 @@ class Analysis:
         self.num_pixel = cal_num_pixel(analysis_mode, self.spot_size, detector_choice, wavelengths,
                                        intrinsic_broadening)
 
-    def cal_signal(self, I, exposure_time):
+    def cal_signal(self, I, exposure_time, detector_camera_choice):
         self.eff = np.zeros_like(self.eff_vignetting)
         for i in range(len(settings.field_points)):
             self.eff[i] = (self.eff_focal_plane_module[i] *
+                           self.eff_telescope_tp[i] *
+                           self.eff_fiber_transmission ** 2 *
+                           self.eff_collimator *
+                           self.eff_dichoric *
+                           self.eff_grating *
+                           self.eff_AR_coating_grating *
+                           self.eff_vignetting[i] *
+                           self.eff_detector_camera_tp[i])
+            if detector_camera_choice == "Custom lens design":
+                self.eff[i] = (1.0 *
                            self.eff_telescope_tp[i] *
                            self.eff_fiber_transmission ** 2 *
                            self.eff_collimator *
@@ -284,10 +294,20 @@ class Analysis:
             dispersion[i] = cos_gamma[i] * cos_beta / (dl_db * line_density)
         return dispersion
 
-    def cal_continuum(self, I_continuum, exposure_time):
+    def cal_continuum(self, I_continuum, exposure_time, detector_camera_choice):
         self.eff = np.zeros_like(self.eff_vignetting)
         for i in range(len(settings.field_points)):
             self.eff[i] = (self.eff_focal_plane_module[i] *
+                           self.eff_telescope_tp[i] *
+                           self.eff_fiber_transmission ** 2 *
+                           self.eff_collimator *
+                           self.eff_dichoric *
+                           self.eff_grating *
+                           self.eff_AR_coating_grating *
+                           self.eff_vignetting[i] *
+                           self.eff_detector_camera_tp[i])
+            if detector_camera_choice == "Custom lens design":
+                self.eff[i] = (1.0 *
                            self.eff_telescope_tp[i] *
                            self.eff_fiber_transmission ** 2 *
                            self.eff_collimator *
