@@ -21,8 +21,8 @@ def show_result():
     resolution = analysis.cal_resolution()
 
     spot_size = analysis.spot_size
-    kk = spot_size[:, [20, 41, -35, -19]]
-    np.savetxt("bb.txt", kk)
+    #kk = spot_size[:, [20, 41, -35, -19]]
+    #np.savetxt("bb.txt", kk)
 
     num_pixel = analysis.num_pixel
 
