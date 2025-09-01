@@ -119,7 +119,7 @@ eff_collimator = 0.9  # assume 90% reflexivity
 f_collimator = 200  # mm
 
 # fiber
-eff_fiber_transmission = 0.96  # assume 4% reflectivity
+eff_fiber_transmission = 0.90  # assume 10% reflectivity
 
 # constant
 speed_of_light = constant.speed_of_light  # ~3e8 m/s
