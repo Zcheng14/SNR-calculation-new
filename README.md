@@ -1,3 +1,6 @@
+# Updating on 2025.09.01
+New feature:
+1. Update the efficiency of fiber transmission.(from 0.96 to 0.9)
 # Updating on 2025.08.21
 New features:
 1. Add the simulation spot size data of custom lens.
