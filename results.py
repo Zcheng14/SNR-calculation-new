@@ -98,26 +98,26 @@ def print_result_info_multi_wavelength(channel, wavelengths, signal, num_pixel, 
     if channel == 'blue':
         st.write('Blue channel')
         st.markdown(
-            f"- Average photon counts from target: {round(np.mean(signal[:, :cut_index + 1]))} e$^-$")
-        st.markdown(f"- Average PSF area: {round(np.mean(num_pixel[:, :cut_index + 1]))} pixel")
+            f"- Average photon counts from target: {np.mean(signal[:, :cut_index + 1]):.2e} e$^-$")
+        st.markdown(f"- Average PSF area: {np.mean(num_pixel[:, :cut_index + 1]):.2e} pixel")
         st.markdown(
-            f"- Average sky counts: {round(np.mean(sky_noise_per_pixel[:, :cut_index + 1]))} e$^-$/1D pixel")
+            f"- Average sky counts: {np.mean(sky_noise_per_pixel[:, :cut_index + 1]):.2e} e$^-$/1D pixel")
     elif channel == 'red':
         st.write('Red channel')
         st.markdown(
-            f"- Average photon counts from target: {round(np.mean(signal[:, cut_index + 1:]))} e$^-$")
-        st.markdown(f"- Average PSF area: {round(np.mean(num_pixel[:, cut_index + 1:]))} pixel")
+            f"- Average photon counts from target: {np.mean(signal[:, cut_index + 1:]):.2e} e$^-$")
+        st.markdown(f"- Average PSF area: {np.mean(num_pixel[:, cut_index + 1:]):.2e} pixel")
         st.markdown(
-            f"- Average sky counts: {round(np.mean(sky_noise_per_pixel[:, cut_index + 1:]))} e$^-$/1D pixel")
+            f"- Average sky counts: {np.mean(sky_noise_per_pixel[:, cut_index + 1:]):.2e} e$^-$/1D pixel")
 
     if st.session_state.temperature_change_toggle is True:
         st.markdown(
-            f"- Dark counts: {round(darknoise_per_pixel)} e$^-$/pixel at {settings.detector[detector_choice]['temperature'] + temperature_change} C$^\circ$")
+            f"- Dark counts: {darknoise_per_pixel:.2e} e$^-$/pixel at {settings.detector[detector_choice]['temperature'] + temperature_change} C$^\circ$")
     else:
         st.markdown(
-            f"- Dark counts: {round(darknoise_per_pixel)} e$^-$/pixel at {settings.detector[detector_choice]['temperature']} C$^\circ$")
+            f"- Dark counts: {darknoise_per_pixel:.2e} e$^-$/pixel at {settings.detector[detector_choice]['temperature']} C$^\circ$")
 
-    st.markdown(f"- Read noise: {round(readnoise_per_pixel)} e$^-$/pixel")
+    st.markdown(f"- Read noise: {readnoise_per_pixel:.2e} e$^-$/pixel")
 
 
 def print_result_info_single_wavelength(wavelengths, SNR, resolution, signal, num_pixel, sky_noise_per_pixel, detector_choice, darknoise_per_pixel, temperature_change, readnoise_per_pixel):
@@ -148,12 +148,11 @@ def print_result_info_single_wavelength(wavelengths, SNR, resolution, signal, nu
 
     if st.session_state.temperature_change_toggle is True:
         st.markdown(
-            f"- Dark counts: {round(darknoise_per_pixel)} e$^-$/pixel at {settings.detector[detector_choice]['temperature'] + temperature_change} C$^\circ$")
+            f"- Dark counts: {darknoise_per_pixel:.2e} e$^-$/pixel at {settings.detector[detector_choice]['temperature'] + temperature_change} C$^\circ$")
     else:
         st.markdown(
-            f"- Dark counts: {round(darknoise_per_pixel)} e$^-$/pixel at {settings.detector[detector_choice]['temperature']} C$^\circ$")
-    st.markdown(f"- Read noise: {round(readnoise_per_pixel)} e$^-$/pixel")
-
+            f"- Dark counts: {darknoise_per_pixel:.2e} e$^-$/pixel at {settings.detector[detector_choice]['temperature']} C$^\circ$")
+    st.markdown(f"- Read noise: {readnoise_per_pixel:.2e} e$^-$/pixel")
 
 '''
 class ThroughputContributorGraph(Graph):

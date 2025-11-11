@@ -123,10 +123,10 @@ class Overview:
                 else:
                     if is_temperature_change is False:
                         st.markdown(
-                            f"- Dark current: {settings.detector[detector_choice]['darkcurrent']} e$^-$/pixel/s at {settings.detector[detector_choice]['temperature']} C$^\circ$")
+                            f"- Dark current: {settings.detector[detector_choice]['darkcurrent']:.2e} e$^-$/pixel/s at {settings.detector[detector_choice]['temperature']} C$^\circ$")
                     elif is_temperature_change is True:
                         st.markdown(
-                            f"- Dark current: {settings.detector[detector_choice]['darkcurrent']} e$^-$/pixel/s at {settings.detector[detector_choice]['temperature']} C$^\circ$\n  - Temperature change: {temperature_change}C$^\circ$")
+                            f"- Dark current: {settings.detector[detector_choice]['darkcurrent']:.2e} e$^-$/pixel/s at {settings.detector[detector_choice]['temperature']} C$^\circ$\n  - Temperature change: {temperature_change}C$^\circ$")
                 if settings.detector[detector_choice]['QE'] is None:
                     st.markdown(f"- QE: {chr(0x274C)}")
                 else:
