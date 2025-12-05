@@ -284,6 +284,7 @@ class Analysis:
                 e_angle0 = emergent_angle0_blue
             else:
                 e_angle0 = emergent_angle0_red
+        e_angle0 = np.radians(e_angle0)
         for i in range(len(field_points)):
             cos_gamma = Formula.cos_gamma(field_points)
             cos_beta = Formula.cos_beta(line_density, self.wavelengths, field_points[i])
