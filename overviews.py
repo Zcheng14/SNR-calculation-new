@@ -113,7 +113,7 @@ class Overview:
                     st.markdown(f"- Pixel size: {chr(0x274C)}")
                 else:
                     st.markdown(
-                        f"- Pixel size: {settings.detector[detector_choice]['pixel size']} mm x {settings.detector[detector_choice]['pixel size']} mm")
+                        f"- Pixel size: {settings.detector[detector_choice]['pixel size']} um x {settings.detector[detector_choice]['pixel size']} um")
                 if settings.detector[detector_choice]['readnoise'] is None:
                     st.markdown(f"- Read noise: {chr(0x274C)}")
                 else:

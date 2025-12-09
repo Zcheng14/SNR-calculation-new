@@ -160,7 +160,7 @@ def cal_num_pixel(analysis_mode, spot_size, detector_choice, wavelength, intrins
         pixel_area = settings.detector[detector_choice]["pixel size"] ** 2
         num_pixel = spot_area / pixel_area
     elif analysis_mode == "Single wavelength":
-        wavelength_width = intrinsic_broadening / settings.speed_of_light * (wavelength / 1000)
+        wavelength_width = intrinsic_broadening * 1000 / settings.speed_of_light * (wavelength / 1000)
         spot_area = np.sqrt(spot_size ** 2 + wavelength_width ** 2) * spot_size / 4 * constant.pi
         pixel_area = settings.detector[detector_choice]["pixel size"] ** 2
         num_pixel = spot_area / pixel_area
