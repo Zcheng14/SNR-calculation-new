@@ -11,11 +11,12 @@ This is a demo script for exposure timme calculation with multiple sources.
 """
 #%%
 class Telescope():
-    def __init__(self, focal_length=392.5, diameter=392.5 / 2.9):
+    def __init__(self, focal_length=392.5, diameter=392.5 / 2.9, fiber_core_diameter=0.05):
         self.focal_length = focal_length # mm
         self.diameter = diameter # mm
+        self.fiber_core_diameter = fiber_core_diameter # mm
         self.A = self.area()
-        self.solid_angle = np.pi * (self.diameter / (2 * self.focal_length)) ** 2 * (
+        self.solid_angle = np.pi * (self.fiber_core_diameter / (2 * self.focal_length)) ** 2 * (
             180 / np.pi * 3600) ** 2  # arcsec^2
         self.throughput = self.read_throughput()  # throughput data
         
@@ -280,7 +281,7 @@ def tot_efficiency(common_settings, telescope, camera, detector):
                             qe_interp)
     return wavelengths, total_eff
 
-def dispersion(common_settings, camera):
+def cal_dispersion(common_settings, camera):
     """
     This function calculates the dispersion (mm/nm) at different field points and wavelengths.
     Parameters:
@@ -325,16 +326,15 @@ def dispersion(common_settings, camera):
 def cal_signal(I, exposure_time, total_eff, telescope, wavelengths, common_settings):
     A = telescope.A  # cm^2
     solid_angle = telescope.solid_angle  # arcsec^2
-    telescope_focal = telescope.focal_length  # mm
     signal = np.zeros_like(total_eff)
     for i in range(len(total_eff)):
         total_energy = I * A * solid_angle * exposure_time  # erg
         frequency = common_settings.speed_of_light / (wavelengths * 1e-9)
         photon_energy = (common_settings.h * frequency) / 1e-7
         signal[i] = total_energy / photon_energy * total_eff[i]
-    return signal
+    return np.nanmean(signal),signal
 
-def number_of_pixels(camera, detector, analysis_mode, intrinsic_broadening=None, wavelength=None):
+def number_of_pixels(camera, detector, analysis_mode='All wavelength', intrinsic_broadening=None, wavelength=None):
     # intrinsic_broadening: km/s
     # wavelength: nm
     spot_size = camera.spot_size  # um
@@ -348,18 +348,196 @@ def number_of_pixels(camera, detector, analysis_mode, intrinsic_broadening=None,
             print("Please provide intrinsic_broadening for single wavelength analysis.")
         else:
             width = intrinsic_broadening/(constant.speed_of_light / 1000) * (wavelength / 1000) # note: convert speed of light to km/s and wavelength to um
-            
+            spot_area = np.sqrt(spot_size ** 2 + width ** 2) * spot_size / 4 * constant.pi
+            pixel_area = pixel_size ** 2
+            n_pixels = spot_area / pixel_area
+    return n_pixels
 
-        
+def cal_continuum(I_continuum, exposure_time, total_eff, telescope, wavelengths, common_settings, camera, detector):
+    # I_continuum: erg/cm^2/s/A/arcsec^2
+    A = telescope.A  # cm^2
+    solid_angle = telescope.solid_angle  # arcsec^2
+    pixel_size_1d = detector.pixel_size  # um
+    dispersion_wavelengths, dispersion_values = cal_dispersion(common_settings, camera=camera)
+    if len(wavelengths) != len(dispersion_wavelengths):
+        dispersion_interp = np.zeros_like((len(total_eff),len(wavelengths)))
+        for i in range(len(total_eff)):
+            dispersion_interp[i] = np.interp(wavelengths, dispersion_wavelengths, dispersion_values[i])
+    else:
+        dispersion_interp = dispersion_values
+    continuum = np.zeros_like(total_eff)
+    for i in range(len(total_eff)):
+        total_energy = I_continuum * A * solid_angle * exposure_time  # erg
+        frequency = common_settings.speed_of_light / (wavelengths * 1e-9)
+        photon_energy = (common_settings.h * frequency) / 1e-7
+        continuum[i] = total_energy / photon_energy * dispersion_interp[i] * (pixel_size_1d * 1e4)
+    
+    return continuum
 
-    pass
-# %% test
+def cal_sky_background(surface_brightness, exposure_time, total_eff, telescope, wavelengths, common_settings, camera, detector):
+    # surface_brightness: mag/arcsec^2
+    # Using MaNGA sky brightness model
+    
+    A = telescope.A  # cm^2
+    solid_angle = telescope.solid_angle  # arcsec^2
+    spot_size = camera.spot_size  # um
+    pixel_size_1d = detector.pixel_size  # um
+
+    manga_count = 90 * 10 ** ((surface_brightness - 21.5) / (-2.5))
+    manga_exposuretime = 900
+    manga_disperson = 1.4
+    sdss_mirror = ((2.5 / 2) ** 2 * constant.pi - (1.3 / 2) ** 2 * constant.pi) * 1e4
+    manga_fiberarea = constant.pi
+    manga_efficiency = 0.32
+
+    sky_brightness = manga_count / (
+        manga_exposuretime * manga_disperson * sdss_mirror * manga_fiberarea * manga_efficiency
+    )
+    dispersion_wavelengths, dispersion_values = cal_dispersion(common_settings, camera=camera)
+    if len(wavelengths) != len(dispersion_wavelengths):
+        dispersion_interp = np.zeros_like((len(total_eff),len(wavelengths)))
+        for i in range(len(total_eff)):
+            dispersion_interp[i] = np.interp(wavelengths, dispersion_wavelengths, dispersion_values[i])
+    else:
+        dispersion_interp = dispersion_values
+    
+    sky_brightness = sky_brightness * dispersion_interp * (pixel_size_1d * 1e4)  # electrons/s/pixel/arcsec^2/cm^2
+    sky_noise_per_pixel = sky_brightness * exposure_time * solid_angle * A * total_eff  # number of electrons
+    sky_noise = sky_noise_per_pixel * (spot_size / pixel_size_1d)
+    return np.nanmean(sky_noise_per_pixel),sky_noise
+
+def cal_read_noise(detector, n_pixels):
+    # n_pixels: number of pixels in the spot size
+    read_noise_per_pixel = detector.readnoise**2  # electrons
+    read_noise = read_noise_per_pixel * n_pixels  # electrons
+    return read_noise
+
+def cal_dark_current(detector, exposure_time, n_pixels, is_temperature_change=False, temperature_change=None):
+    # n_pixels: number of pixels in the spot size
+    if is_temperature_change is True:
+        darknoise_per_pixel = detector.darkcurrent * (2 ** (temperature_change / 10)) * exposure_time
+    else:
+        darknoise_per_pixel = detector.darkcurrent * exposure_time  # electrons
+    dark_current = darknoise_per_pixel * n_pixels  # electrons
+    return dark_current
+
+def cal_SNR(signal, sky_noise, read_noise, dark_current, continuum_mode=False, continuum=0):
+    # signal: number of electrons in the spot size
+    # continuum: number of electrons in the continuum
+    # sky_noise: number of electrons in the sky background noise
+    # read_noise: number of electrons in the read noise
+    # dark_current: number of electrons in the dark current
+    if continuum_mode is False:
+        SNR = signal / np.sqrt(signal + sky_noise + read_noise + dark_current)
+    else:
+        SNR = signal / np.sqrt(signal + continuum + sky_noise + read_noise + dark_current)
+    return SNR
+# %% test the code
+# ----------------------------------
+# Initialize objects
+# 1. Telescope: the default is the Canon lens
+# 2. Camera: options are "Custom design lens" and "Nikkor lens"
+# 3. Detector: options are 'QHY461' and 'QHY600'
+# 4. CommonSettings: default settings
+
+# This script uses the "Custom design lens" and 'QHY461' as an example
+# And this script is suitable for multiple targets with different fiber slit heights in "All wavelength" analysis mode.
+# If you want to do "Single wavelength" analysis mode, please go to the website of ETC.
+
+
+# The input information includes:
+# Header of the fits file:
+# 1. emission line flux in erg/cm^2/s/arcsec^2
+# 2. Exposure time in seconds: selected from [180, 900, 1800, 3600]
+# 3. Sky surface brightness in mag/arcsec^2
+# 4. If continuum is considered, 
+# 5. continuum surface brightness in erg/cm^2/s/A/arcsec^2: if no continuum, set it to 0
+
+# ----------------------------------
+#%% construct the example fits file with multiple sources
+
+fluxes_list = [5e-17, 1e-16, 5e-16]  # erg/cm^2/s/arcsec^2
+exposure_time_list = [900,1800,3600]  # seconds
+sky_mag_list = [20.5,21.5,22.5]  # mag/arcsec^2
+if_continuum = [False, False, False]
+continuum_list = [1e-18, 1e-18, 1e-18]  # erg/cm^2/s/A/arcsec^2
+
+# save to a fits file
+from astropy.io import fits
+from astropy.table import Table
+data = Table()
+data['fluxes'] = fluxes_list
+data['exposure_time'] = exposure_time_list
+data['sky_mag'] = sky_mag_list
+data['if_continuum'] = if_continuum
+data['continuum'] = continuum_list
+data.write('./data/multi_sources.fits', format='fits', overwrite=True)
+
+#%%
 telescope = Telescope()
 camera = DetectorCamera(camera_type="Custom design lens")
 detector = Detector(detector_type='QHY461')
 common_settings = CommonSettings()
-# %% check total efficiency
+
+
 wavelengths, total_eff = tot_efficiency(common_settings, telescope, camera, detector)
+dispersion_wavelengths, dispersion_values = cal_dispersion(common_settings, camera)
+
+# read the fits file
+data = fits.open('./data/multi_sources.fits')[1].data
+fluxes_list = data['fluxes']
+exposure_time_list = data['exposure_time']
+sky_mag_list = data['sky_mag']
+if_continuum_list = data['if_continuum']
+continuum_list = data['continuum']
+
+
+SNR_results = np.zeros((len(fluxes_list), len(common_settings.field_points), len(wavelengths)))  # store SNR results
+SNR_mean_results = np.zeros((len(fluxes_list), len(common_settings.field_points)))  # store mean SNR results
+
+for i in range(len(fluxes_list)):
+    flux = fluxes_list[i]
+    exposure_time = exposure_time_list[i]
+    sky_mag = sky_mag_list[i]
+    if_continuum = if_continuum_list[i]
+    continuum_value = continuum_list[i]
+    sky_per_pixel, sky_noise = cal_sky_background(sky_mag, exposure_time, total_eff, telescope, wavelengths, common_settings, camera, detector)
+    signal_per_pixel, signal = cal_signal(flux, exposure_time, total_eff, telescope, wavelengths, common_settings)
+    if if_continuum is True:
+        continuum = cal_continuum(continuum_value, exposure_time, total_eff, telescope, wavelengths, common_settings, camera, detector)
+    else:
+        continuum = 0
+    n_pixels = number_of_pixels(camera, detector, analysis_mode='All wavelength')
+    read_noise = cal_read_noise(detector, n_pixels)
+    dark_current = cal_dark_current(detector, exposure_time, n_pixels)
+    SNR = cal_SNR(signal, sky_noise, read_noise, dark_current, continuum_mode=if_continuum, continuum=continuum)
+    SNR_results[i] = SNR
+    SNR_mean_results[i] = np.nanmean(SNR, axis=1)
+
+#%% Save SNR results to a txt file
+# the txt file will have the following columns:
+# 1. source index
+# 2. fiber slit height (mm)
+# 3. mean SNR
+# 4. SNR at each wavelength (nm)
+output_file = './data/multi_sources_SNR_results.txt'
+with open(output_file, 'w') as f:
+    header = 'Source_Index\tFiber_Slit_Height(mm)\tMean_SNR'
+    for wl in wavelengths:
+        header += f'\tSNR_{wl}nm'
+    f.write(header + '\n')
+    for i in range(len(fluxes_list)):
+        for j in range(len(common_settings.field_points)):
+            line = f'{i+1}\t{common_settings.field_points[j]}\t{SNR_mean_results[i][j]}'
+            for k in range(len(wavelengths)):
+                line += f'\t{SNR_results[i][j][k]}'
+            f.write(line + '\n')
+
+
+
+#%%
+"""
+# Plot total efficiency
 fiber_slit_height = common_settings.field_points
 color_list = ['red','orange','green','cyan','blue','brown','k']
 plt.figure(figsize=(16,8),dpi=200)
@@ -395,5 +573,5 @@ plt.yticks(fontsize=20)
 plt.xticks(fontsize=20)
 plt.title(r'Throughput of red channel', fontsize=20)
 plt.show()
-
+"""
 # %%
