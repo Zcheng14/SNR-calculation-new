@@ -532,7 +532,10 @@ with open(output_file, 'w') as f:
             for k in range(len(wavelengths)):
                 line += f'\t{SNR_results[i][j][k]}'
             f.write(line + '\n')
-
+#%% print txt file
+with open(output_file, 'r') as f:
+    content = f.read()
+    print(content)
 
 
 #%%
