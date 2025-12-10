@@ -1,3 +1,8 @@
+# Updating on 2025.12.10
+New features:
+1. Updating the sky background estimation
+2. the demo_multi.py can be used to calculate the SNR for multiple targets after giving exposure time.
+
 # Updating on 2025.09.01
 New feature:
 1. Update the efficiency of fiber transmission.(from 0.96 to 0.9)
