@@ -117,7 +117,7 @@ def print_result_info_multi_wavelength(channel, wavelengths, signal, num_pixel, 
         st.markdown(
             f"- Dark counts: {darknoise_per_pixel:.2e} e$^-$/pixel at {settings.detector[detector_choice]['temperature']} C$^\circ$")
 
-    st.markdown(f"- Read noise: {readnoise_per_pixel:.2e} e$^-$/pixel")
+    st.markdown(f"- Read noise: {np.sqrt(readnoise_per_pixel):.2e} e$^-$/pixel")
 
 
 def print_result_info_single_wavelength(wavelengths, SNR, resolution, signal, num_pixel, sky_noise_per_pixel, detector_choice, darknoise_per_pixel, temperature_change, readnoise_per_pixel):
@@ -152,7 +152,7 @@ def print_result_info_single_wavelength(wavelengths, SNR, resolution, signal, nu
     else:
         st.markdown(
             f"- Dark counts: {darknoise_per_pixel:.2e} e$^-$/pixel at {settings.detector[detector_choice]['temperature']} C$^\circ$")
-    st.markdown(f"- Read noise: {readnoise_per_pixel:.2e} e$^-$/pixel")
+    st.markdown(f"- Read noise: {np.sqrt(readnoise_per_pixel):.2e} e$^-$/pixel")
 
 '''
 class ThroughputContributorGraph(Graph):

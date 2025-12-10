@@ -101,7 +101,9 @@ class Panel:
 
                 self.wavelengths = np.concatenate((np.arange(wavelength_blue[0], wavelength_blue[1] + 1),
                                                    np.arange(wavelength_red[0], wavelength_red[1] + 1)), axis=None)
-                self.exposure_time = st.number_input("Enter exposure time (s)", value=1800)
+                #self.exposure_time = st.number_input("Enter exposure time (s)", value=1800)
+                self.exposure_time = st.selectbox("Choose exposure time (s):", [180,900,1800,3600], index=2, 
+                                                  placeholder="Select exposure time...")
                 self.I = st.number_input('Enter emission-line flux (erg/cm$^2$/s/arcsec$^2$):', format='%g',
                                          value=1e-17)
                 self.surface_brightness = st.number_input('Enter sky background surface brightness (mag/arcsec$^2$):',
@@ -113,7 +115,7 @@ class Panel:
             with st.container(border=True):
                 wavelengths = st.number_input("Enter the wavelength (nm):")
                 self.wavelengths = np.array(wavelengths, ndmin=1)
-                self.exposure_time = st.slider("Exposure time (s)", min_value=0, max_value=1800, value=1800)
+                self.exposure_time = st.slider("Exposure time (s)", min_value=0, max_value=3600, value=3600)
                 self.I = st.number_input("Enter the emission-line flux (erg/cm$^2$/s/arcsec$^2$):", format='%g',
                                          value=1e-17)
                 self.intrinsic_broadening = st.number_input("Enter the intrinsic broadening (km/s):", format='%g',
