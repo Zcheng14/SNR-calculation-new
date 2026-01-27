@@ -1,6 +1,6 @@
 # Updating on 2025.12.10
 New features:
-1. Updating the sky background estimation
+1. Updating the sky background estimation.
 2. the demo_multi.py can be used to calculate the SNR for multiple targets after giving exposure time.
 
 # Updating on 2025.09.01

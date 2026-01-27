@@ -95,7 +95,7 @@ for i in range(len(fluxes_list)):
 #%% Save SNR results to a txt file
 # ---------------------------------
 # the txt file will have the following columns:
-# 1. source index
+# 1. source flux
 # 2. proposed exposure time (s)
 # 3. fiber slit height (mm)
 # 4. mean SNR (across all wavelengths)
@@ -108,7 +108,7 @@ for i in range(len(fluxes_list)):
 output_file = './data/multi_sources_SNR_results.txt'
 with open(output_file, 'w') as f:
     # write header
-    header = 'Source_Index\tExposure_Time(s)\tFiber_Slit_Height(mm)\tMean_SNR\tSNR_Hb(486nm)\tSNR_OIII(501nm)\tSNR_Ha(656nm)\tSNR_SII(672nm)'
+    header = 'Source_Flux\tExposure_Time(s)\tFiber_Slit_Height(mm)\tMean_SNR\tSNR_Hb(486nm)\tSNR_OIII(501nm)\tSNR_Ha(656nm)\tSNR_SII(672nm)'
     for wl in wavelengths:
         header += f'\tSNR_{wl:.1f}nm'
     f.write(header + '\n')
@@ -116,7 +116,7 @@ with open(output_file, 'w') as f:
     # write data
     for i in range(len(fluxes_list)):
         for j in range(len(common_settings.field_points)):
-            line = f'{i}\t{exposure_time_list[i]}\t{common_settings.field_points[j]}\t{SNR_mean_results[i,j]:.2f}'
+            line = f'{fluxes_list[i]}\t{exposure_time_list[i]}\t{common_settings.field_points[j]}\t{SNR_mean_results[i,j]:.2f}'
             # find indices for specific wavelengths
             idx_Hb = np.argmin(np.abs(wavelengths - 486))
             idx_OIII = np.argmin(np.abs(wavelengths - 501))
