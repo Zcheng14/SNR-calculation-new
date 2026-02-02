@@ -283,14 +283,14 @@ def tot_efficiency(common_settings, telescope, camera, detector):
 
 def cal_dispersion(common_settings, camera):
     """
-    This function calculates the dispersion (mm/nm) at different field points and wavelengths.
+    This function calculates the dispersion (nm/mm) at different field points and wavelengths.
     Parameters:
     -----------
     common_settings: CommonSettings object
     camera: Camera object
     Returns:
     wavelengths: array of wavelengths (nm)
-    dispersion: 2D array of dispersion (mm/nm) for each field point and wavelength
+    dispersion: 2D array of dispersion (nm/mm) for each field point and wavelength
     """
     wavelengths = camera.wavelength_range
     emergent_angle0_blue = camera.emergent_angle0_blue
@@ -434,4 +434,11 @@ def cal_SNR(signal, sky_noise, read_noise, dark_current, continuum_mode=False, c
     return SNR
 
 
-# %%
+def cal_resolution(common_settings, camera):
+    dispersion_wavelengths, dispersion_values = cal_dispersion(common_settings, camera=camera)
+    spot_size = camera.spot_size  # um
+    resolution = np.zeros_like(dispersion_values)
+    field_points = common_settings.field_points
+    for i in range(len(field_points)):
+        resolution[i] = dispersion_wavelengths / (spot_size[i] * 1e3 * dispersion_values[i])  # note: convert spot size to nm
+    return dispersion_wavelengths, resolution
